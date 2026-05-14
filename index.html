@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 工具导航 — 打工人必备</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
+      background: #0f0f13;
+      color: #e8e8f0;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1e1e2e;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #7c6af7, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    nav a {
+      color: #9999bb;
+      text-decoration: none;
+      margin-left: 28px;
+      font-size: 14px;
+      transition: color .2s;
+    }
+    nav a:hover { color: #e8e8f0; }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 72px 20px 48px;
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #7c6af7, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: #9999bb;
+      font-size: 16px;
+      max-width: 480px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+
+    /* ── Search ── */
+    .search-wrap {
+      max-width: 520px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .search-wrap input {
+      width: 100%;
+      padding: 14px 20px 14px 48px;
+      border-radius: 12px;
+      border: 1px solid #2a2a3e;
+      background: #16161f;
+      color: #e8e8f0;
+      font-size: 15px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-wrap input:focus { border-color: #7c6af7; }
+    .search-wrap input::placeholder { color: #55556a; }
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #55556a;
+      font-size: 18px;
+    }
+
+    /* ── Category tabs ── */
+    .categories {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 32px 20px 0;
+    }
+    .cat-btn {
+      padding: 8px 18px;
+      border-radius: 999px;
+      border: 1px solid #2a2a3e;
+      background: transparent;
+      color: #9999bb;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .cat-btn:hover, .cat-btn.active {
+      background: #7c6af7;
+      border-color: #7c6af7;
+      color: #fff;
+    }
+
+    /* ── Grid ── */
+    .grid-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #c8c8e0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: #16161f;
+      border: 1px solid #1e1e2e;
+      border-radius: 14px;
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color .2s, transform .2s;
+      cursor: pointer;
+    }
+    .card:hover {
+      border-color: #7c6af7;
+      transform: translateY(-2px);
+    }
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .card-name {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .card-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #1e1e2e;
+      color: #7c6af7;
+      margin-left: auto;
+      white-space: nowrap;
+    }
+    .card-desc {
+      font-size: 13px;
+      color: #7777a0;
+      line-height: 1.6;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+    .card-guide {
+      font-size: 12px;
+      color: #38bdf8;
+      text-decoration: none;
+    }
+    .card-guide:hover { text-decoration: underline; }
+    .card-free {
+      font-size: 11px;
+      color: #4ade80;
+    }
+    .card-paid {
+      font-size: 11px;
+      color: #f59e0b;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: #44445a;
+      font-size: 13px;
+      border-top: 1px solid #1e1e2e;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡ AI 导航</div>
+  <nav>
+    <a href="#">工具库</a>
+    <a href="#">使用教程</a>
+    <a href="#">场景推荐</a>
+    <a href="#">关于</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>找到适合你的 <span>AI 工具</span><br/>从此告别低效打工</h1>
+  <p>精选 AI 工具 + 中文使用教程，帮你快速上手，用 AI 提升工作效率。</p>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="搜索工具名称或使用场景，如「写周报」「做PPT」…" oninput="filterCards()" />
+  </div>
+</section>
+
+<div class="categories">
+  <button class="cat-btn active" onclick="filterCat('all', this)">全部</button>
+  <button class="cat-btn" onclick="filterCat('写作', this)">✍️ 写作</button>
+  <button class="cat-btn" onclick="filterCat('图像', this)">🎨 图像</button>
+  <button class="cat-btn" onclick="filterCat('效率', this)">⚡ 效率</button>
+  <button class="cat-btn" onclick="filterCat('编程', this)">💻 编程</button>
+  <button class="cat-btn" onclick="filterCat('视频', this)">🎬 视频</button>
+  <button class="cat-btn" onclick="filterCat('PPT', this)">📊 PPT</button>
+</div>
+
+<div class="grid-section">
+  <div class="section-title">🔥 热门工具</div>
+  <div class="grid" id="toolGrid">
+
+    <a class="card" href="https://chat.openai.com" target="_blank" data-cat="写作" data-name="ChatGPT 写周报 做方案">
+      <div class="card-top">
+        <div class="card-icon" style="background:#1a2a1a;">🤖</div>
+        <span class="card-name">ChatGPT</span>
+        <span class="card-tag">写作</span>
+      </div>
+      <div class="card-desc">最强通用 AI 助手，写周报、做方案、回邮件，什么都能干。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-paid">免费/付费</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://claude.ai" target="_blank" data-cat="写作" data-name="Claude 写作 分析 长文">
+      <div class="card-top">
+        <div class="card-icon" style="background:#1a1a2a;">🧠</div>
+        <span class="card-name">Claude</span>
+        <span class="card-tag">写作</span>
+      </div>
+      <div class="card-desc">长文写作和分析首选，逻辑严谨，适合写报告、整理会议纪要。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-paid">免费/付费</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://www.midjourney.com" target="_blank" data-cat="图像" data-name="Midjourney 图像 设计 海报">
+      <div class="card-top">
+        <div class="card-icon" style="background:#1a1520;">🎨</div>
+        <span class="card-name">Midjourney</span>
+        <span class="card-tag">图像</span>
+      </div>
+      <div class="card-desc">AI 绘图天花板，生成海报、插图、产品概念图，效果惊艳。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-paid">付费</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://www.notion.so/product/ai" target="_blank" data-cat="效率" data-name="Notion AI 笔记 整理 效率">
+      <div class="card-top">
+        <div class="card-icon" style="background:#1a1a1a;">📝</div>
+        <span class="card-name">Notion AI</span>
+        <span class="card-tag">效率</span>
+      </div>
+      <div class="card-desc">在 Notion 里直接用 AI 整理笔记、生成摘要、扩写内容。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-paid">付费</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://github.com/features/copilot" target="_blank" data-cat="编程" data-name="GitHub Copilot 编程 代码 开发">
+      <div class="card-top">
+        <div class="card-icon" style="background:#0d1117;">💻</div>
+        <span class="card-name">GitHub Copilot</span>
+        <span class="card-tag">编程</span>
+      </div>
+      <div class="card-desc">写代码的 AI 副驾驶，自动补全、生成函数，程序员效率翻倍。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-paid">付费</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://www.gamma.app" target="_blank" data-cat="PPT" data-name="Gamma PPT 演示 幻灯片">
+      <div class="card-top">
+        <div class="card-icon" style="background:#1a1520;">📊</div>
+        <span class="card-name">Gamma</span>
+        <span class="card-tag">PPT</span>
+      </div>
+      <div class="card-desc">输入主题，AI 自动生成精美 PPT，告别熬夜做幻灯片。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-free">免费可用</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://runway.com" target="_blank" data-cat="视频" data-name="Runway 视频 剪辑 生成">
+      <div class="card-top">
+        <div class="card-icon" style="background:#1a1520;">🎬</div>
+        <span class="card-name">Runway</span>
+        <span class="card-tag">视频</span>
+      </div>
+      <div class="card-desc">AI 视频生成与编辑，文字转视频、背景替换，内容创作者必备。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-paid">免费/付费</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://www.perplexity.ai" target="_blank" data-cat="效率" data-name="Perplexity 搜索 调研 资料">
+      <div class="card-top">
+        <div class="card-icon" style="background:#0d1a1a;">🔍</div>
+        <span class="card-name">Perplexity</span>
+        <span class="card-tag">效率</span>
+      </div>
+      <div class="card-desc">AI 搜索引擎，调研资料、找数据、快速了解陌生领域，附来源引用。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-free">免费可用</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://www.canva.com/ai-image-generator/" target="_blank" data-cat="图像" data-name="Canva AI 设计 图片 海报">
+      <div class="card-top">
+        <div class="card-icon" style="background:#0d1a15;">🖼️</div>
+        <span class="card-name">Canva AI</span>
+        <span class="card-tag">图像</span>
+      </div>
+      <div class="card-desc">设计小白也能用，AI 生成图片 + 拖拽排版，做封面、海报超快。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-free">免费可用</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://kimi.moonshot.cn" target="_blank" data-cat="写作" data-name="Kimi 长文 阅读 总结 中文">
+      <div class="card-top">
+        <div class="card-icon" style="background:#0d1520;">🌙</div>
+        <span class="card-name">Kimi</span>
+        <span class="card-tag">写作</span>
+      </div>
+      <div class="card-desc">国产 AI，超长上下文，上传 PDF / 文档让它帮你总结提炼，中文体验好。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-free">免费可用</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://doubao.com" target="_blank" data-cat="效率" data-name="豆包 字节 日常 效率 中文">
+      <div class="card-top">
+        <div class="card-icon" style="background:#1a0d0d;">🫘</div>
+        <span class="card-name">豆包</span>
+        <span class="card-tag">效率</span>
+      </div>
+      <div class="card-desc">字节出品，日常问答、写文案、翻译，国内访问流畅，完全免费。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-free">免费</span>
+      </div>
+    </a>
+
+    <a class="card" href="https://tongyi.aliyun.com" target="_blank" data-cat="效率" data-name="通义千问 阿里 办公 效率">
+      <div class="card-top">
+        <div class="card-icon" style="background:#1a1000;">🔮</div>
+        <span class="card-name">通义千问</span>
+        <span class="card-tag">效率</span>
+      </div>
+      <div class="card-desc">阿里出品，支持文档阅读、代码、图片理解，企业办公场景覆盖全。</div>
+      <div class="card-footer">
+        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
+        <span class="card-free">免费可用</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<footer>
+  © 2025 AI 导航 · 帮打工人用好 AI · 持续更新中
+</footer>
+
+<script>
+  let currentCat = 'all';
+
+  function filterCards() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.card').forEach(card => {
+      const name = card.dataset.name.toLowerCase();
+      const matchSearch = !q || name.includes(q);
+      const matchCat = currentCat === 'all' || card.dataset.cat === currentCat;
+      card.style.display = matchSearch && matchCat ? '' : 'none';
+    });
+  }
+
+  function filterCat(cat, btn) {
+    currentCat = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterCards();
+  }
+</script>
+
+</body>
+</html>
