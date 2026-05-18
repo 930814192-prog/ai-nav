@@ -3,434 +3,671 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI 工具导航 — 打工人必备</title>
+  <title>喵办 AI 导航 — 打工人必备 AI 工具站</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
-      background: #0f0f13;
-      color: #e8e8f0;
-      min-height: 100vh;
+      background: #f5f6f7;
+      color: #333;
+      font-size: 14px;
     }
 
-    /* ── Header ── */
-    header {
-      padding: 24px 40px;
+    a { text-decoration: none; color: inherit; }
+
+    /* ══════════════════════════════
+       顶部导航
+    ══════════════════════════════ */
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+    }
+    .topbar-inner {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 52px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #1e1e2e;
+      gap: 0;
     }
-    .logo {
-      font-size: 20px;
-      font-weight: 700;
-      background: linear-gradient(135deg, #7c6af7, #a78bfa);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    nav a {
-      color: #9999bb;
-      text-decoration: none;
-      margin-left: 28px;
-      font-size: 14px;
-      transition: color .2s;
-    }
-    nav a:hover { color: #e8e8f0; }
-
-    /* ── Hero ── */
-    .hero {
-      text-align: center;
-      padding: 72px 20px 48px;
-    }
-    .hero h1 {
-      font-size: clamp(28px, 5vw, 52px);
-      font-weight: 800;
-      line-height: 1.2;
-      margin-bottom: 16px;
-    }
-    .hero h1 span {
-      background: linear-gradient(135deg, #7c6af7, #38bdf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .hero p {
-      color: #9999bb;
-      font-size: 16px;
-      max-width: 480px;
-      margin: 0 auto 36px;
-      line-height: 1.7;
-    }
-
-    /* ── Search ── */
-    .search-wrap {
-      max-width: 520px;
-      margin: 0 auto;
-      position: relative;
-    }
-    .search-wrap input {
-      width: 100%;
-      padding: 14px 20px 14px 48px;
-      border-radius: 12px;
-      border: 1px solid #2a2a3e;
-      background: #16161f;
-      color: #e8e8f0;
-      font-size: 15px;
-      outline: none;
-      transition: border-color .2s;
-    }
-    .search-wrap input:focus { border-color: #7c6af7; }
-    .search-wrap input::placeholder { color: #55556a; }
-    .search-icon {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #55556a;
-      font-size: 18px;
-    }
-
-    /* ── Category tabs ── */
-    .categories {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 32px 20px 0;
-    }
-    .cat-btn {
-      padding: 8px 18px;
-      border-radius: 999px;
-      border: 1px solid #2a2a3e;
-      background: transparent;
-      color: #9999bb;
-      font-size: 13px;
-      cursor: pointer;
-      transition: all .2s;
-    }
-    .cat-btn:hover, .cat-btn.active {
-      background: #7c6af7;
-      border-color: #7c6af7;
-      color: #fff;
-    }
-
-    /* ── Grid ── */
-    .grid-section {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 40px 24px 80px;
-    }
-    .section-title {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: #c8c8e0;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 16px;
-    }
-
-    /* ── Card ── */
-    .card {
-      background: #16161f;
-      border: 1px solid #1e1e2e;
-      border-radius: 14px;
-      padding: 20px;
-      text-decoration: none;
-      color: inherit;
+    .logo-area {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      transition: border-color .2s, transform .2s;
-      cursor: pointer;
-    }
-    .card:hover {
-      border-color: #7c6af7;
-      transform: translateY(-2px);
-    }
-    .card-top {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .card-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
       justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
+      margin-right: 32px;
+      line-height: 1.2;
     }
-    .card-name {
-      font-size: 15px;
-      font-weight: 600;
+    .logo-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #e53935;
     }
-    .card-tag {
+    .logo-sub {
       font-size: 11px;
-      padding: 2px 8px;
+      color: #999;
+    }
+    .topnav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+    }
+    .topnav-links a {
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #555;
+      white-space: nowrap;
+      transition: all .15s;
+    }
+    .topnav-links a:hover { background: #f5f5f5; color: #333; }
+    .topnav-links a.active { color: #e53935; font-weight: 600; }
+    .topnav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-search {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #666;
+      padding: 4px 8px;
+    }
+    .btn-login {
+      background: #333;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 6px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-login:hover { background: #111; }
+
+    /* ══════════════════════════════
+       Hero 区域（搜索 + 快讯）
+    ══════════════════════════════ */
+    .hero {
+      background: linear-gradient(135deg, #eef0ff 0%, #f5f0ff 50%, #e8f4ff 100%);
+      border-bottom: 1px solid #e0e4ff;
+    }
+    .hero-inner {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      display: grid;
+      grid-template-columns: 160px 1fr 280px;
+      gap: 24px;
+      align-items: center;
+    }
+    .hero-logo {
+      text-align: center;
+    }
+    .hero-logo-icon {
+      font-size: 48px;
+      line-height: 1;
+    }
+    .hero-logo-text {
+      font-size: 16px;
+      font-weight: 800;
+      color: #e53935;
+      margin-top: 4px;
+    }
+    .hero-logo-sub {
+      font-size: 11px;
+      color: #999;
+    }
+    .hero-search-area {}
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .quick-tag {
+      padding: 3px 10px;
+      border-radius: 3px;
+      background: #f5f5f5;
+      color: #555;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all .15s;
+      border: 1px solid #eee;
+    }
+    .quick-tag:hover { background: #e53935; color: #fff; border-color: #e53935; }
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: #fff;
       border-radius: 999px;
-      background: #1e1e2e;
-      color: #7c6af7;
-      margin-left: auto;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      padding: 6px 6px 6px 24px;
+      max-width: 600px;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 10px 0;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      color: #333;
+      background: transparent;
+    }
+    .search-box input::placeholder { color: #bbb; }
+    .search-box button {
+      background: #5b6af7;
+      color: #fff;
+      border: none;
+      padding: 10px 28px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      border-radius: 999px;
+      transition: background .15s;
       white-space: nowrap;
     }
-    .card-desc {
-      font-size: 13px;
-      color: #7777a0;
-      line-height: 1.6;
+    .search-box button:hover { background: #4455e6; }
+
+    /* 快讯 */
+    .hero-news {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      overflow: hidden;
     }
-    .card-footer {
+    .news-header {
+      background: #f9f9f9;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-top: 4px;
+      border-bottom: 1px solid #eee;
     }
-    .card-guide {
+    .news-header-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+    }
+    .news-more {
       font-size: 12px;
-      color: #38bdf8;
-      text-decoration: none;
+      color: #999;
     }
-    .card-guide:hover { text-decoration: underline; }
-    .card-free {
-      font-size: 11px;
-      color: #4ade80;
+    .news-more:hover { color: #e53935; }
+    .news-list { padding: 4px 0; }
+    .news-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      gap: 8px;
+      transition: background .15s;
+      cursor: pointer;
     }
-    .card-paid {
+    .news-item:hover { background: #fafafa; }
+    .news-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #e53935;
+      flex-shrink: 0;
+    }
+    .news-text {
+      flex: 1;
+      font-size: 12px;
+      color: #555;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .news-time {
       font-size: 11px;
-      color: #f59e0b;
+      color: #bbb;
+      white-space: nowrap;
     }
 
-    /* ── Footer ── */
+    /* ══════════════════════════════
+       主体布局
+    ══════════════════════════════ */
+    .body-wrap {
+      max-width: 1300px;
+      margin: 16px auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    /* ══════════════════════════════
+       左侧分类导航
+    ══════════════════════════════ */
+    .sidebar {
+      width: 140px;
+      flex-shrink: 0;
+      background: #fff;
+      border-radius: 6px;
+      border: 1px solid #eee;
+      overflow: hidden;
+      position: sticky;
+      top: 68px;
+    }
+    .sidebar-logo {
+      display: block;
+      width: 100%;
+      padding: 14px 12px 10px;
+      border-bottom: 1px solid #eee;
+      text-align: center;
+    }
+    .sidebar-logo img {
+      width: 100%;
+      max-width: 110px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    .sidebar-item {
+      display: block;
+      width: 100%;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      border: none;
+      background: none;
+      text-align: left;
+      border-left: 3px solid transparent;
+      transition: all .15s;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    .sidebar-item:last-child { border-bottom: none; }
+    .sidebar-item:hover { background: #fafafa; color: #333; }
+    .sidebar-item.active {
+      border-left-color: #e53935;
+      color: #e53935;
+      font-weight: 600;
+      background: #fff8f8;
+    }
+
+    /* ══════════════════════════════
+       右侧内容区
+    ══════════════════════════════ */
+    .main { flex: 1; min-width: 0; }
+
+    /* 公告栏 */
+    .notice-bar {
+      background: #fff8f8;
+      border: 1px solid #fdd;
+      border-radius: 6px;
+      padding: 9px 14px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #c62828;
+    }
+    .notice-bar span { flex: 1; }
+
+    /* 分类标题 */
+    .cat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .cat-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #222;
+    }
+    .cat-count {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* 工具网格 */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    /* 工具卡片 */
+    .tool-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all .15s;
+      text-align: center;
+    }
+    .tool-card:hover {
+      border-color: #e53935;
+      box-shadow: 0 2px 12px rgba(229,57,53,.08);
+      transform: translateY(-1px);
+    }
+    .tool-card.featured {
+      background: #f0f7ff;
+      border-color: #90caf9;
+    }
+    .tool-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .tool-icon img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .tool-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #222;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
+    .tool-desc {
+      font-size: 11px;
+      color: #999;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    /* 右侧悬浮栏 */
+    .float-bar {
+      position: fixed;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 100;
+    }
+    .float-btn {
+      width: 44px;
+      height: 44px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all .15s;
+      color: #666;
+    }
+    .float-btn span {
+      font-size: 10px;
+      color: #999;
+      margin-top: 1px;
+    }
+    .float-btn:hover { border-color: #e53935; color: #e53935; }
+
+    /* ══════════════════════════════
+       Footer
+    ══════════════════════════════ */
     footer {
       text-align: center;
-      padding: 32px;
-      color: #44445a;
-      font-size: 13px;
-      border-top: 1px solid #1e1e2e;
+      padding: 24px;
+      color: #bbb;
+      font-size: 12px;
+      border-top: 1px solid #eee;
+      background: #fff;
+      margin-top: 24px;
+    }
+
+    /* 响应式 */
+    @media (max-width: 1100px) {
+      .tool-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-logo { display: none; }
+      .hero-news { display: none; }
+      .sidebar { display: none; }
+      .tool-grid { grid-template-columns: repeat(3, 1fr); }
+      .float-bar { display: none; }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">⚡ AI 导航</div>
-  <nav>
-    <a href="#">工具库</a>
-    <a href="#">使用教程</a>
-    <a href="#">场景推荐</a>
-    <a href="#">关于</a>
-  </nav>
-</header>
-
-<section class="hero">
-  <h1>找到适合你的 <span>AI 工具</span><br/>从此告别低效打工</h1>
-  <p>精选 AI 工具 + 中文使用教程，帮你快速上手，用 AI 提升工作效率。</p>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="搜索工具名称或使用场景，如「写周报」「做PPT」…" oninput="filterCards()" />
+<!-- 顶部导航 -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo-area">
+      <div class="logo-name">喵办</div>
+      <div class="logo-sub">AI 工具导航</div>
+    </div>
+    <div class="topnav-links">
+      <a href="#" class="active">首页</a>
+      <a href="#">工具库</a>
+      <a href="#">使用教程</a>
+      <a href="#">场景推荐</a>
+      <a href="#">AI 资讯</a>
+      <a href="#">关于我们</a>
+    </div>
+    <div class="topnav-right">
+      <button class="btn-search">🔍</button>
+      <button class="btn-login">登录</button>
+    </div>
   </div>
-</section>
-
-<div class="categories">
-  <button class="cat-btn active" onclick="filterCat('all', this)">全部</button>
-  <button class="cat-btn" onclick="filterCat('写作', this)">✍️ 写作</button>
-  <button class="cat-btn" onclick="filterCat('图像', this)">🎨 图像</button>
-  <button class="cat-btn" onclick="filterCat('效率', this)">⚡ 效率</button>
-  <button class="cat-btn" onclick="filterCat('编程', this)">💻 编程</button>
-  <button class="cat-btn" onclick="filterCat('视频', this)">🎬 视频</button>
-  <button class="cat-btn" onclick="filterCat('PPT', this)">📊 PPT</button>
 </div>
 
-<div class="grid-section">
-  <div class="section-title">🔥 热门工具</div>
-  <div class="grid" id="toolGrid">
-
-    <a class="card" href="https://chat.openai.com" target="_blank" data-cat="写作" data-name="ChatGPT 写周报 做方案">
-      <div class="card-top">
-        <div class="card-icon" style="background:#1a2a1a;">🤖</div>
-        <span class="card-name">ChatGPT</span>
-        <span class="card-tag">写作</span>
+<!-- Hero 区域 -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-logo">
+      <div class="hero-logo-icon">🐱</div>
+      <div class="hero-logo-text">喵办</div>
+      <div class="hero-logo-sub">AI 工具导航</div>
+    </div>
+    <div class="hero-search-area">
+      <div class="quick-tags">
+        <span class="quick-tag" onclick="searchScene('ChatGPT')">ChatGPT</span>
+        <span class="quick-tag" onclick="searchScene('DeepSeek')">DeepSeek</span>
+        <span class="quick-tag" onclick="searchScene('Kimi')">Kimi</span>
+        <span class="quick-tag" onclick="searchScene('豆包')">豆包</span>
+        <span class="quick-tag" onclick="searchScene('Midjourney')">Midjourney</span>
+        <span class="quick-tag" onclick="searchScene('写周报')">写周报</span>
+        <span class="quick-tag" onclick="searchScene('做PPT')">做 PPT</span>
+        <span class="quick-tag" onclick="searchScene('写代码')">写代码</span>
       </div>
-      <div class="card-desc">最强通用 AI 助手，写周报、做方案、回邮件，什么都能干。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-paid">免费/付费</span>
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="搜索 AI 工具或使用场景…" oninput="filterCards()" />
+        <button onclick="filterCards()">搜索</button>
       </div>
-    </a>
-
-    <a class="card" href="https://claude.ai" target="_blank" data-cat="写作" data-name="Claude 写作 分析 长文">
-      <div class="card-top">
-        <div class="card-icon" style="background:#1a1a2a;">🧠</div>
-        <span class="card-name">Claude</span>
-        <span class="card-tag">写作</span>
+    </div>
+    <div class="hero-news">
+      <div class="news-header">
+        <span class="news-header-title">📡 AI 快讯</span>
+        <a href="#" class="news-more">更多 &gt;</a>
       </div>
-      <div class="card-desc">长文写作和分析首选，逻辑严谨，适合写报告、整理会议纪要。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-paid">免费/付费</span>
-      </div>
-    </a>
-
-    <a class="card" href="https://www.midjourney.com" target="_blank" data-cat="图像" data-name="Midjourney 图像 设计 海报">
-      <div class="card-top">
-        <div class="card-icon" style="background:#1a1520;">🎨</div>
-        <span class="card-name">Midjourney</span>
-        <span class="card-tag">图像</span>
-      </div>
-      <div class="card-desc">AI 绘图天花板，生成海报、插图、产品概念图，效果惊艳。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-paid">付费</span>
-      </div>
-    </a>
-
-    <a class="card" href="https://www.notion.so/product/ai" target="_blank" data-cat="效率" data-name="Notion AI 笔记 整理 效率">
-      <div class="card-top">
-        <div class="card-icon" style="background:#1a1a1a;">📝</div>
-        <span class="card-name">Notion AI</span>
-        <span class="card-tag">效率</span>
-      </div>
-      <div class="card-desc">在 Notion 里直接用 AI 整理笔记、生成摘要、扩写内容。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-paid">付费</span>
-      </div>
-    </a>
-
-    <a class="card" href="https://github.com/features/copilot" target="_blank" data-cat="编程" data-name="GitHub Copilot 编程 代码 开发">
-      <div class="card-top">
-        <div class="card-icon" style="background:#0d1117;">💻</div>
-        <span class="card-name">GitHub Copilot</span>
-        <span class="card-tag">编程</span>
-      </div>
-      <div class="card-desc">写代码的 AI 副驾驶，自动补全、生成函数，程序员效率翻倍。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-paid">付费</span>
-      </div>
-    </a>
-
-    <a class="card" href="https://www.gamma.app" target="_blank" data-cat="PPT" data-name="Gamma PPT 演示 幻灯片">
-      <div class="card-top">
-        <div class="card-icon" style="background:#1a1520;">📊</div>
-        <span class="card-name">Gamma</span>
-        <span class="card-tag">PPT</span>
-      </div>
-      <div class="card-desc">输入主题，AI 自动生成精美 PPT，告别熬夜做幻灯片。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-free">免费可用</span>
-      </div>
-    </a>
-
-    <a class="card" href="https://runway.com" target="_blank" data-cat="视频" data-name="Runway 视频 剪辑 生成">
-      <div class="card-top">
-        <div class="card-icon" style="background:#1a1520;">🎬</div>
-        <span class="card-name">Runway</span>
-        <span class="card-tag">视频</span>
-      </div>
-      <div class="card-desc">AI 视频生成与编辑，文字转视频、背景替换，内容创作者必备。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-paid">免费/付费</span>
-      </div>
-    </a>
-
-    <a class="card" href="https://www.perplexity.ai" target="_blank" data-cat="效率" data-name="Perplexity 搜索 调研 资料">
-      <div class="card-top">
-        <div class="card-icon" style="background:#0d1a1a;">🔍</div>
-        <span class="card-name">Perplexity</span>
-        <span class="card-tag">效率</span>
-      </div>
-      <div class="card-desc">AI 搜索引擎，调研资料、找数据、快速了解陌生领域，附来源引用。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-free">免费可用</span>
-      </div>
-    </a>
-
-    <a class="card" href="https://www.canva.com/ai-image-generator/" target="_blank" data-cat="图像" data-name="Canva AI 设计 图片 海报">
-      <div class="card-top">
-        <div class="card-icon" style="background:#0d1a15;">🖼️</div>
-        <span class="card-name">Canva AI</span>
-        <span class="card-tag">图像</span>
-      </div>
-      <div class="card-desc">设计小白也能用，AI 生成图片 + 拖拽排版，做封面、海报超快。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-free">免费可用</span>
-      </div>
-    </a>
-
-    <a class="card" href="https://kimi.moonshot.cn" target="_blank" data-cat="写作" data-name="Kimi 长文 阅读 总结 中文">
-      <div class="card-top">
-        <div class="card-icon" style="background:#0d1520;">🌙</div>
-        <span class="card-name">Kimi</span>
-        <span class="card-tag">写作</span>
-      </div>
-      <div class="card-desc">国产 AI，超长上下文，上传 PDF / 文档让它帮你总结提炼，中文体验好。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-free">免费可用</span>
-      </div>
-    </a>
-
-    <a class="card" href="https://doubao.com" target="_blank" data-cat="效率" data-name="豆包 字节 日常 效率 中文">
-      <div class="card-top">
-        <div class="card-icon" style="background:#1a0d0d;">🫘</div>
-        <span class="card-name">豆包</span>
-        <span class="card-tag">效率</span>
-      </div>
-      <div class="card-desc">字节出品，日常问答、写文案、翻译，国内访问流畅，完全免费。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-free">免费</span>
-      </div>
-    </a>
-
-    <a class="card" href="https://tongyi.aliyun.com" target="_blank" data-cat="效率" data-name="通义千问 阿里 办公 效率">
-      <div class="card-top">
-        <div class="card-icon" style="background:#1a1000;">🔮</div>
-        <span class="card-name">通义千问</span>
-        <span class="card-tag">效率</span>
-      </div>
-      <div class="card-desc">阿里出品，支持文档阅读、代码、图片理解，企业办公场景覆盖全。</div>
-      <div class="card-footer">
-        <a class="card-guide" href="#" onclick="event.stopPropagation()">📖 查看教程 →</a>
-        <span class="card-free">免费可用</span>
-      </div>
-    </a>
-
+      <div class="news-list" id="newsList"></div>
+    </div>
   </div>
+</div>
+
+<!-- 主体 -->
+<div class="body-wrap">
+
+  <!-- 左侧分类 -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="mulu-logo.png" alt="喵办 AI 导航" />
+    </div>
+    <button class="sidebar-item active" onclick="filterCat('all', this)">全部工具</button>
+    <div id="catButtons"></div>
+  </aside>
+
+  <!-- 右侧内容 -->
+  <main class="main">
+
+    <div class="notice-bar">
+      📢 <span>喵办 AI 导航持续更新中，收录最好用的 AI 工具 + 中文使用教程，帮打工人快速上手 &gt;&gt;</span>
+    </div>
+
+    <div class="cat-header">
+      <div class="cat-title" id="catTitle">全部工具</div>
+      <div class="cat-count" id="catCount">共 16 个工具</div>
+    </div>
+
+    <div class="tool-grid" id="toolGrid">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:#bbb;">加载中…</div>
+    </div>
+  </main>
+</div>
+
+<!-- 右侧悬浮栏 -->
+<div class="float-bar">
+  <div class="float-btn">💬<span>反馈</span></div>
+  <div class="float-btn">⭐<span>收藏</span></div>
+  <div class="float-btn">🔝<span>顶部</span></div>
 </div>
 
 <footer>
-  © 2025 AI 导航 · 帮打工人用好 AI · 持续更新中
+  © 2025 喵办 AI 导航 &nbsp;·&nbsp; 帮打工人用好 AI &nbsp;·&nbsp; 持续更新中
 </footer>
 
 <script>
-  let currentCat = 'all';
+  const API_BASE = 'https://web-production-e9e6b.up.railway.app';
+
+  let allTools = [];
+  let currentCatId = 'all';
+
+  function relativeTime(dateStr) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const h = Math.floor(diff / 3600000);
+    if (h < 1) return '刚刚';
+    if (h < 24) return h + '小时前';
+    const d = Math.floor(h / 24);
+    if (d === 1) return '昨天';
+    return d + '天前';
+  }
+
+  function renderToolCard(tool) {
+    const featuredClass = tool.is_featured ? ' featured' : '';
+    const icon = tool.logo || '🤖';
+    return `<a class="tool-card${featuredClass}" href="${tool.url}" target="_blank" rel="noopener noreferrer"
+        data-cat-id="${tool.category_id}" data-name="${tool.name} ${tool.description || ''}">
+      <div class="tool-icon">${icon}</div>
+      <div class="tool-name">${tool.name}</div>
+      <div class="tool-desc">${tool.description || ''}</div>
+    </a>`;
+  }
+
+  function renderTools(tools) {
+    const grid = document.getElementById('toolGrid');
+    if (!tools.length) {
+      grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:40px;color:#bbb;">没有找到相关工具</p>';
+    } else {
+      grid.innerHTML = tools.map(renderToolCard).join('');
+    }
+    document.getElementById('catCount').textContent = '共 ' + tools.length + ' 个工具';
+  }
 
   function filterCards() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    document.querySelectorAll('.card').forEach(card => {
-      const name = card.dataset.name.toLowerCase();
-      const matchSearch = !q || name.includes(q);
-      const matchCat = currentCat === 'all' || card.dataset.cat === currentCat;
-      card.style.display = matchSearch && matchCat ? '' : 'none';
-    });
+    const q = document.getElementById('searchInput').value.toLowerCase().trim();
+    let filtered = allTools;
+    if (currentCatId !== 'all') {
+      filtered = filtered.filter(t => String(t.category_id) === String(currentCatId));
+    }
+    if (q) {
+      filtered = filtered.filter(t =>
+        (t.name + ' ' + (t.description || '')).toLowerCase().includes(q)
+      );
+    }
+    renderTools(filtered);
   }
 
-  function filterCat(cat, btn) {
-    currentCat = cat;
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  function filterCat(catId, btn) {
+    currentCatId = catId;
+    document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    document.getElementById('catTitle').textContent = btn.textContent.trim();
+    document.getElementById('searchInput').value = '';
     filterCards();
   }
+
+  function searchScene(keyword) {
+    currentCatId = 'all';
+    document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+    document.querySelector('.sidebar-item').classList.add('active');
+    document.getElementById('catTitle').textContent = '全部工具';
+    document.getElementById('searchInput').value = keyword;
+    filterCards();
+  }
+
+  async function init() {
+    try {
+      const [catRes, toolRes, newsRes] = await Promise.all([
+        fetch(API_BASE + '/categories').then(r => r.json()),
+        fetch(API_BASE + '/tools').then(r => r.json()),
+        fetch(API_BASE + '/news').then(r => r.json()),
+      ]);
+
+      // 渲染侧边栏分类（跳过第一个"全部工具"，已硬编码）
+      const catButtons = document.getElementById('catButtons');
+      catButtons.innerHTML = catRes.data
+        .filter(cat => cat.name !== '全部工具')
+        .map(cat => `<button class="sidebar-item" onclick="filterCat('${cat.id}', this)">${cat.name}</button>`)
+        .join('');
+
+      // 渲染工具
+      allTools = toolRes.data;
+      renderTools(allTools);
+
+      // 渲染新闻
+      document.getElementById('newsList').innerHTML = newsRes.data
+        .map(item => `<div class="news-item" onclick="window.open('${item.url || '#'}','_blank')">
+          <div class="news-dot"></div>
+          <div class="news-text">${item.title}</div>
+          <div class="news-time">${relativeTime(item.published_at)}</div>
+        </div>`)
+        .join('');
+
+    } catch (err) {
+      console.error('API 加载失败:', err);
+      document.getElementById('toolGrid').innerHTML =
+        '<p style="grid-column:1/-1;text-align:center;padding:40px;color:#c00;">数据加载失败，请刷新重试</p>';
+    }
+  }
+
+  init();
+
+  document.querySelector('.float-bar').lastElementChild.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 </script>
 
 </body>
