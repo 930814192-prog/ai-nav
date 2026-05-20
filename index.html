@@ -433,6 +433,25 @@
     }
     .float-btn:hover { border-color: #e53935; color: #e53935; }
 
+    .float-btn { position: relative; }
+    .float-btn .qr-popup {
+      display: none;
+      position: absolute;
+      right: 54px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      white-space: nowrap;
+      z-index: 300;
+    }
+    .float-btn .qr-popup img { width: 140px; height: 140px; display: block; border-radius: 4px; }
+    .float-btn .qr-popup p { font-size: 11px; color: #999; text-align: center; margin-top: 6px; }
+    .float-btn:hover .qr-popup { display: block; }
+
     /* ══════════════════════════════
        Footer
     ══════════════════════════════ */
@@ -549,7 +568,12 @@
 
 <!-- 右侧悬浮栏 -->
 <div class="float-bar">
-  <div class="float-btn">💬<span>反馈</span></div>
+  <div class="float-btn">💬<span>反馈</span>
+    <div class="qr-popup">
+      <img src="weixin.jpg" alt="微信二维码" />
+      <p>微信扫码联系我们</p>
+    </div>
+  </div>
   <div class="float-btn">⭐<span>收藏</span></div>
   <div class="float-btn">🔝<span>顶部</span></div>
 </div>
