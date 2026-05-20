@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>使用教程 — 喵办 AI 导航</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; background: #f5f6f7; color: #333; font-size: 14px; }
+    a { text-decoration: none; color: inherit; }
+
+    .topbar { background: #fff; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 200; }
+    .topbar-inner { max-width: 1300px; margin: 0 auto; padding: 0 24px; height: 52px; display: flex; align-items: center; }
+    .logo-area { display: flex; flex-direction: column; justify-content: center; margin-right: 32px; line-height: 1.2; }
+    .logo-name { font-size: 18px; font-weight: 800; color: #e53935; }
+    .logo-sub { font-size: 11px; color: #999; }
+    .topnav-links { display: flex; align-items: center; gap: 2px; flex: 1; }
+    .topnav-links a { padding: 6px 12px; border-radius: 4px; font-size: 13px; color: #555; white-space: nowrap; transition: all .15s; }
+    .topnav-links a:hover { background: #f5f5f5; color: #333; }
+    .topnav-links a.active { color: #e53935; font-weight: 600; }
+    .topnav-right { display: flex; align-items: center; gap: 10px; }
+    .btn-login { background: #333; color: #fff; border: none; border-radius: 4px; padding: 6px 16px; font-size: 13px; cursor: pointer; }
+    .btn-login:hover { background: #111; }
+
+    .hero { background: linear-gradient(135deg, #eef0ff 0%, #f5f0ff 50%, #e8f4ff 100%); border-bottom: 1px solid #e0e4ff; padding: 32px 24px; text-align: center; }
+    .hero-title { font-size: 26px; font-weight: 800; color: #222; margin-bottom: 8px; }
+    .hero-sub { font-size: 14px; color: #777; margin-bottom: 20px; }
+    .hero-search { display: flex; align-items: center; background: #fff; border-radius: 999px; box-shadow: 0 4px 24px rgba(0,0,0,.10); padding: 6px 6px 6px 24px; max-width: 500px; margin: 0 auto; }
+    .hero-search input { flex: 1; padding: 10px 0; border: none; outline: none; font-size: 15px; background: transparent; color: #333; }
+    .hero-search input::placeholder { color: #bbb; }
+    .hero-search button { background: #5b6af7; color: #fff; border: none; padding: 10px 28px; font-size: 14px; cursor: pointer; font-weight: 600; border-radius: 999px; }
+    .hero-search button:hover { background: #4455e6; }
+
+    .body-wrap { max-width: 1300px; margin: 20px auto; padding: 0 24px; display: flex; gap: 16px; align-items: flex-start; }
+
+    .sidebar { width: 140px; flex-shrink: 0; background: #fff; border-radius: 6px; border: 1px solid #eee; overflow: hidden; position: sticky; top: 68px; }
+    .sidebar-title { padding: 12px 16px; font-size: 12px; font-weight: 600; color: #999; border-bottom: 1px solid #f0f0f0; background: #fafafa; }
+    .sidebar-item { display: block; width: 100%; padding: 10px 16px; font-size: 13px; color: #555; cursor: pointer; border: none; background: none; text-align: left; border-left: 3px solid transparent; transition: all .15s; border-bottom: 1px solid #f5f5f5; }
+    .sidebar-item:last-child { border-bottom: none; }
+    .sidebar-item:hover { background: #fafafa; color: #333; }
+    .sidebar-item.active { border-left-color: #e53935; color: #e53935; font-weight: 600; background: #fff8f8; }
+
+    .main { flex: 1; min-width: 0; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .section-title { font-size: 16px; font-weight: 700; color: #222; }
+    .section-count { font-size: 12px; color: #999; }
+
+    .tutorial-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .tut-item { background: #fff; border: 1px solid #eee; border-radius: 8px; overflow: hidden; transition: border-color .15s; }
+    .tut-item.open { border-color: #e53935; }
+
+    .tut-card { display: flex; align-items: center; gap: 16px; padding: 16px 20px; cursor: pointer; }
+    .tut-card:hover { background: #fafafa; }
+
+    .tut-icon { width: 48px; height: 48px; border-radius: 10px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+    .tut-body { flex: 1; min-width: 0; }
+    .tut-title { font-size: 15px; font-weight: 600; color: #222; margin-bottom: 4px; }
+    .tut-desc { font-size: 12px; color: #888; line-height: 1.6; }
+    .tut-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .tut-tag { padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 500; }
+    .tag-beginner { background: #e8f5e9; color: #2e7d32; }
+    .tag-intermediate { background: #fff3e0; color: #e65100; }
+    .tag-advanced { background: #fce4ec; color: #c62828; }
+    .tut-time { font-size: 11px; color: #bbb; }
+    .tut-tool { font-size: 11px; color: #aaa; background: #f5f5f5; padding: 2px 8px; border-radius: 3px; }
+    .tut-arrow { font-size: 14px; color: #ccc; flex-shrink: 0; transition: transform .2s; }
+    .tut-item.open .tut-arrow { transform: rotate(180deg); color: #e53935; }
+
+    .tut-content { display: none; border-top: 2px solid #e53935; background: #f9f9f9; padding: 20px 24px; }
+    .tut-item.open .tut-content { display: block; }
+    .tut-content .intro { font-size: 13px; color: #555; line-height: 1.8; margin-bottom: 16px; }
+    .tut-steps { list-style: none; margin-bottom: 16px; }
+    .tut-steps li { display: flex; gap: 12px; margin-bottom: 12px; font-size: 13px; color: #444; line-height: 1.7; align-items: flex-start; }
+    .step-num { width: 22px; height: 22px; border-radius: 50%; background: #e53935; color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+    .tut-tips { background: #fff8e1; border-left: 3px solid #ffc107; padding: 10px 14px; border-radius: 0 4px 4px 0; font-size: 12px; color: #666; line-height: 1.7; }
+    .tut-tips strong { color: #e65100; }
+
+    .empty { text-align: center; padding: 60px 20px; color: #bbb; font-size: 14px; }
+
+    footer { text-align: center; padding: 24px; color: #bbb; font-size: 12px; border-top: 1px solid #eee; background: #fff; margin-top: 24px; }
+
+    @media (max-width: 768px) { .sidebar { display: none; } }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo-area">
+      <div class="logo-name">喵办</div>
+      <div class="logo-sub">AI 工具导航</div>
+    </a>
+    <div class="topnav-links">
+      <a href="index.html">首页</a>
+      <a href="tutorials.html" class="active">使用教程</a>
+      <a href="scenes.html">场景推荐</a>
+      <a href="news.html">AI 资讯</a>
+      <a href="#">关于我们</a>
+    </div>
+    <div class="topnav-right">
+      <button class="btn-login">登录</button>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-title">AI 工具使用教程</div>
+  <div class="hero-sub">手把手教你用好每一个 AI 工具，点击教程查看详细步骤</div>
+  <div class="hero-search">
+    <input type="text" id="searchInput" placeholder="搜索教程，比如「ChatGPT 注册」…" oninput="filterTutorials()" />
+    <button onclick="filterTutorials()">搜索</button>
+  </div>
+</div>
+
+<div class="body-wrap">
+  <aside class="sidebar">
+    <div class="sidebar-title">按工具分类</div>
+    <button class="sidebar-item active" onclick="filterCat('all',this)">全部教程</button>
+    <button class="sidebar-item" onclick="filterCat('chat',this)">聊天 AI</button>
+    <button class="sidebar-item" onclick="filterCat('image',this)">绘画 AI</button>
+    <button class="sidebar-item" onclick="filterCat('write',this)">写作 AI</button>
+    <button class="sidebar-item" onclick="filterCat('code',this)">编程 AI</button>
+    <button class="sidebar-item" onclick="filterCat('video',this)">视频 AI</button>
+    <button class="sidebar-item" onclick="filterCat('ppt',this)">PPT 制作</button>
+    <button class="sidebar-item" onclick="filterCat('efficiency',this)">效率 AI</button>
+    <button class="sidebar-item" onclick="filterCat('audio',this)">音频 AI</button>
+    <button class="sidebar-item" onclick="filterCat('translate',this)">翻译 AI</button>
+    <button class="sidebar-item" onclick="filterCat('office',this)">办公 AI</button>
+    <button class="sidebar-item" onclick="filterCat('design',this)">设计 AI</button>
+    <button class="sidebar-item" onclick="filterCat('read',this)">阅读 AI</button>
+    <button class="sidebar-item" onclick="filterCat('ecom',this)">电商 AI</button>
+    <button class="sidebar-item" onclick="filterCat('3d',this)">3D AI</button>
+  </aside>
+  <main class="main">
+    <div class="section-header">
+      <div class="section-title" id="sectionTitle">全部教程</div>
+      <div class="section-count" id="sectionCount"></div>
+    </div>
+    <div class="tutorial-list" id="tutorialList"></div>
+  </main>
+</div>
+
+<footer>© 2025 喵办 AI 导航 &nbsp;·&nbsp; 帮打工人用好 AI &nbsp;·&nbsp; 持续更新中</footer>
+
+<script>
+const tutorials = [
+  {
+    id:1, cat:'chat', icon:'🤖', tool:'ChatGPT', level:'beginner',
+    title:'ChatGPT 完整注册教程（2025最新）', time:'5 分钟',
+    desc:'手把手教你注册 OpenAI 账号，解决国内无法访问的问题，包含手机号验证、账号激活全流程。',
+    intro:'ChatGPT 是目前最强大的 AI 对话工具之一，免费版已可使用 GPT-4o。注册需要科学上网，整个流程约 5 分钟。',
+    steps:['打开 chat.openai.com，点击右上角「Sign up」按钮','输入邮箱地址，设置密码（至少8位），点击「Continue」','去邮箱收取验证邮件，点击「Verify email address」链接','回到页面填写姓名和生日（年龄需满18岁）','选择使用目的，推荐选「I\'m exploring personal use」','注册完成！免费版可直接使用 GPT-4o，无需付费'],
+    tips:'国内访问需要科学上网工具；推荐用谷歌邮箱注册；手机号验证可用接码平台（如 sms-activate.org）'
+  },
+  {
+    id:2, cat:'chat', icon:'🤖', tool:'ChatGPT', level:'intermediate',
+    title:'如何写出高质量 Prompt 提示词', time:'8 分钟',
+    desc:'掌握 Prompt 写作技巧，让 ChatGPT 输出更精准的内容，包含角色设定、格式控制等核心技巧。',
+    intro:'提示词质量直接决定 AI 输出的好坏。掌握这几个技巧，同样的问题能得到完全不同的结果。',
+    steps:['明确角色：开头写「你是一位资深XXX」，给 AI 设定专业身份','给出背景：说明任务的具体场景、目标受众和使用目的','限定格式：要求输出为「列表/表格/分点/JSON」等具体格式','提供示例：给出 1-2 个你期望的输出样例，AI 会模仿风格','分步拆解：复杂任务拆成多轮对话，每次只问一个问题','迭代优化：对不满意的回答说「请更简洁」「语气更正式」'],
+    tips:'越具体越好，避免「写一篇文章」，改成「写一篇500字面向职场新人的XXX文章」；可以说「不要废话，直接给结果」'
+  },
+  {
+    id:3, cat:'chat', icon:'🐋', tool:'DeepSeek', level:'beginner',
+    title:'DeepSeek 入门：免费用国产最强大模型', time:'4 分钟',
+    desc:'无需翻墙，国内直接访问。注册 DeepSeek 账号、切换 R1 推理模式、上传文件分析等核心功能。',
+    intro:'DeepSeek 是国内最强的开源大模型，完全免费，无需翻墙，推理能力媲美 GPT-4o。',
+    steps:['打开 chat.deepseek.com，点击右上角「注册」','用手机号或邮箱注册，国内手机号直接可用，无需验证码平台','登录后进入对话界面，默认使用 DeepSeek-V3 模型','点击输入框左侧「深度思考(R1)」按钮，开启推理模式','R1 模式会显示完整思考过程，适合数学、逻辑、代码问题','点击回形针图标可上传 PDF、图片、代码文件进行分析'],
+    tips:'完全免费无限制；R1 推理模式速度较慢但质量更高；高峰期可能排队，建议错峰使用'
+  },
+  {
+    id:4, cat:'chat', icon:'🌙', tool:'Kimi', level:'beginner',
+    title:'Kimi 长文档分析：一键读懂 PDF 报告', time:'5 分钟',
+    desc:'上传 PDF、Word、网页链接，让 Kimi 帮你提炼重点、生成摘要、回答问题。',
+    intro:'Kimi 最大的优势是超长上下文，可以一次性读取几十万字的文档，非常适合处理研报、合同、学术论文。',
+    steps:['打开 kimi.moonshot.cn，用微信扫码或手机号登录','点击对话框左侧的「+」图标或回形针图标','上传 PDF、Word、Excel 文件（单文件最大 50MB）','也可以直接粘贴网页链接，Kimi 会自动读取页面内容','上传后直接提问，如「总结这份报告的3个核心观点」','可以追问「第二部分讲的XXX具体是什么意思？」'],
+    tips:'支持同时上传多个文件对比分析；免费版每天有使用次数限制；处理英文文档也很准确'
+  },
+  {
+    id:5, cat:'chat', icon:'🟣', tool:'Claude', level:'beginner',
+    title:'Claude 使用教程：长文写作和分析首选', time:'6 分钟',
+    desc:'注册 Claude 账号，了解 Claude 3.5 Sonnet 的核心优势，以及写作、分析、代码场景下的最佳用法。',
+    intro:'Claude 是 Anthropic 出品的 AI 助手，在长文写作、代码理解和逻辑分析方面表现优秀，免费版可用。',
+    steps:['打开 claude.ai，点击「Start for free」','用谷歌账号一键登录，或用邮箱注册（需科学上网）','免费版使用 Claude 3.5 Sonnet，每天有消息数量限制','直接在输入框输入问题，支持中文对话','上传文件：支持 PDF、图片、代码文件，点击回形针图标','写长文时可以说「请写一份完整的XXX方案，不少于2000字」'],
+    tips:'Claude 对写作风格的把控比 ChatGPT 更细腻；免费版用完限额需等次日重置；代码调试能力很强'
+  },
+  {
+    id:6, cat:'image', icon:'🎨', tool:'Midjourney', level:'beginner',
+    title:'Midjourney 新手入门：从注册到出图全流程', time:'10 分钟',
+    desc:'加入 Discord 服务器、订阅 Midjourney、输入第一条绘图指令，以及常用参数的用法。',
+    intro:'Midjourney 是目前效果最好的 AI 绘图工具，通过 Discord 使用，新手约 10 分钟可以出第一张图。',
+    steps:['打开 discord.com 注册 Discord 账号（需邮箱验证）','访问 midjourney.com，点击「Join the Beta」进入官方 Discord','在左侧频道列表找到任意「newbies-XXX」频道进入','在输入框输入 /imagine，选择弹出的 imagine 命令','在 prompt 框输入英文描述，如「a cat on the moon, digital art, 4k」','等待约 1 分钟，生成 4 张图；点击 U1-U4 放大，V1-V4 生成变体'],
+    tips:'免费试用约 25 次后需订阅（$10/月）；提示词用英文效果更好；加 --ar 16:9 指定横版比例'
+  },
+  {
+    id:7, cat:'image', icon:'🎨', tool:'Midjourney', level:'intermediate',
+    title:'Midjourney 提示词进阶：风格光线构图全掌握', time:'12 分钟',
+    desc:'系统讲解艺术风格词、摄影参数词、色调词的组合技巧，附高质量提示词模板。',
+    intro:'掌握提示词结构，出图质量可以提升数倍。核心公式：主体描述 + 风格 + 光线 + 构图 + 参数。',
+    steps:['风格词：oil painting（油画）/ watercolor（水彩）/ cinematic（电影感）/ anime（动漫）','光线词：golden hour（黄金时段）/ studio lighting（棚拍）/ dramatic lighting（戏剧光）','质量词：--q 2 提升质量，--v 6.1 使用最新模型，photorealistic 写实风格','比例词：--ar 1:1 方图，--ar 16:9 横图，--ar 9:16 竖图（适合手机壁纸）','参考图：先上传图片再输入提示词，可以做风格迁移或人物一致性','排除元素：在提示词末尾加 --no text, watermark, blurry 排除不想要的内容'],
+    tips:'好的提示词示例：「portrait of a woman, soft natural lighting, film photography, kodak portra 400, --ar 2:3 --v 6.1」'
+  },
+  {
+    id:8, cat:'image', icon:'🖼️', tool:'Stable Diffusion', level:'advanced',
+    title:'Stable Diffusion 本地部署教程（Windows）', time:'20 分钟',
+    desc:'免费开源的 AI 绘图工具，本地运行无限出图。安装 WebUI、下载模型、基础参数设置。',
+    intro:'Stable Diffusion 完全免费开源，本地部署后无限出图无需付费，但需要 NVIDIA 显卡支持。',
+    steps:['确认显卡：需要 NVIDIA 显卡，显存建议 6GB 以上（RTX 3060 及以上）','安装 Python 3.10 和 Git，从官网下载安装，记得勾选「Add to PATH」','打开命令行，运行：git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui','进入文件夹，双击运行 webui-user.bat，首次运行会自动下载依赖（约 4GB）','安装完成后浏览器自动打开 127.0.0.1:7860，即可使用','去 civitai.com 下载喜欢的模型（.safetensors 文件），放入 models/Stable-diffusion 文件夹'],
+    tips:'没有独显可用 Google Colab 免费云端运行；推荐新手先用在线版 Stable Diffusion XL；首次启动耗时较长请耐心等待'
+  },
+  {
+    id:9, cat:'ppt', icon:'📊', tool:'Gamma', level:'beginner',
+    title:'Gamma 一句话生成 PPT：10 分钟做完汇报', time:'6 分钟',
+    desc:'输入主题，Gamma 自动生成完整 PPT。调整模板、修改内容、导出为 PDF 或 PowerPoint 格式。',
+    intro:'Gamma 是最好用的 AI PPT 工具，输入一句话主题，30 秒生成完整演示文稿，支持中文。',
+    steps:['打开 gamma.app，用谷歌账号登录（免费，无需科学上网）','点击「New」→「Generate」选择 AI 生成模式','输入主题，如「2025年Q2销售复盘报告」，点击「Continue」','选择页数（建议 8-12 页），语言选「Chinese」','选择一个模板风格，点击「Generate」等待约 30 秒','生成后直接点击文字编辑，点击右上角「Export」导出 PPT 或 PDF'],
+    tips:'免费版每月 400 积分，够用约 10 次；导出为 PowerPoint 格式需付费；建议先用 AI 生成框架再手动精修'
+  },
+  {
+    id:10, cat:'code', icon:'💻', tool:'GitHub Copilot', level:'beginner',
+    title:'GitHub Copilot 配置：VS Code 接入 AI 编程助手', time:'8 分钟',
+    desc:'在 VS Code 中安装 Copilot 插件、登录 GitHub 账号、开启代码补全，附常用快捷键。',
+    intro:'GitHub Copilot 是最流行的 AI 编程助手，直接集成在 VS Code 中，写代码时自动补全整段逻辑。',
+    steps:['访问 github.com/features/copilot 开通（学生免费，其他 $10/月，有30天试用）','打开 VS Code，点击左侧扩展图标（或按 Ctrl+Shift+X）','搜索「GitHub Copilot」，点击安装（同时安装 Copilot Chat）','安装后点击右下角 Copilot 图标，登录 GitHub 账号授权','写代码时会自动显示灰色补全建议，按 Tab 接受，按 Esc 忽略','按 Ctrl+I（Mac: Cmd+I）打开内联聊天，用中文描述要写的功能'],
+    tips:'写注释描述功能，Copilot 会自动生成对应代码；选中代码按 Ctrl+I 说「修复这个错误」；Alt+] 切换下一个建议'
+  },
+  {
+    id:11, cat:'code', icon:'🖥️', tool:'Cursor', level:'beginner',
+    title:'Cursor 编辑器入门：AI 帮你写代码改 Bug', time:'8 分钟',
+    desc:'基于 VS Code 的 AI 编程工具。安装配置、用 Cmd+K 生成代码、用 Chat 模式解释和重构代码。',
+    intro:'Cursor 是目前最强的 AI 编程编辑器，界面和 VS Code 完全一样，但 AI 能力远超 Copilot。',
+    steps:['访问 cursor.sh 下载安装，可一键导入 VS Code 的配置和插件','打开项目文件夹，界面和 VS Code 完全一致，上手零成本','按 Ctrl+K（Mac: Cmd+K）在当前位置生成代码，用中文描述需求即可','按 Ctrl+L 打开右侧 Chat 面板，可以问关于整个项目的问题','选中代码后按 Ctrl+K，说「重构这段代码」「添加错误处理」「写单元测试」','Chat 模式支持 @文件名 引用特定文件，AI 会结合上下文回答'],
+    tips:'免费版每月有限额；Cursor 对整个项目的理解比 Copilot 更强；适合需要大范围修改代码的场景'
+  },
+  {
+    id:12, cat:'video', icon:'🎬', tool:'可灵 AI', level:'beginner',
+    title:'可灵 AI 文生视频：用文字生成高质量短片', time:'7 分钟',
+    desc:'快手推出的国产视频生成工具。写视频提示词、设置时长和比例、下载成品视频。',
+    intro:'可灵 AI 是国内最好的视频生成工具，支持文字生成视频和图片生成视频，每天有免费次数。',
+    steps:['打开 klingai.kuaishou.com，用手机号注册登录','点击顶部「AI 视频」→「文字生成视频」','在输入框描述视频内容，建议用中文，尽量具体','选择视频时长（5秒或10秒）和画面比例（16:9/9:16/1:1）','点击「生成」，等待约 2-5 分钟','生成后点击下载按钮保存 MP4 文件，也可以继续用「图生视频」'],
+    tips:'描述加上「慢镜头」「电影感」「4K画质」等词提升质量；人物动作类提示词效果最好；每天免费次数用完后需购买积分'
+  },
+  {
+    id:13, cat:'write', icon:'✍️', tool:'Notion AI', level:'beginner',
+    title:'Notion AI 写作助手：笔记自动生成内容', time:'6 分钟',
+    desc:'在 Notion 中唤出 AI 助手，一键续写、总结、翻译、改写，整理会议记录、生成周报模板。',
+    intro:'Notion AI 直接集成在笔记中，不用切换工具，写到哪里就在哪里调用 AI，效率极高。',
+    steps:['打开 notion.so 注册账号（免费），新建一个页面','在页面任意位置按空格键，唤出 AI 助手菜单','选择「Draft with AI」，输入主题，AI 直接生成段落内容','选中已有文字，点击「Ask AI」可以：总结 / 翻译 / 改写 / 续写 / 缩短','输入「/ai」也可以快速唤出，说「帮我写一份会议纪要模板」','生成的内容可以直接编辑，不满意点「Try again」重新生成'],
+    tips:'Notion AI 需要额外订阅（$10/月）；最适合整理会议记录、生成周报模板、翻译文档；和 Notion 数据库结合使用效率翻倍'
+  },
+  {
+    id:14, cat:'write', icon:'📝', tool:'豆包', level:'beginner',
+    title:'豆包 AI 写作：周报邮件方案一键生成', time:'5 分钟',
+    desc:'字节跳动出品，国内免费无限制。用豆包写工作周报、商务邮件、项目方案，附实用提示词模板。',
+    intro:'豆包是国内最好用的免费 AI 助手，完全不限次数，写作场景覆盖全面，手机电脑都能用。',
+    steps:['打开 doubao.com 或下载豆包 App，用抖音账号或手机号登录','直接在对话框输入写作需求，完全免费无次数限制','写周报：「帮我写本周工作周报，完成了XXX，遇到问题XXX，下周计划XXX」','写邮件：「帮我写一封给客户的跟进邮件，语气专业但不失亲切，200字左右」','写方案：「帮我写一份XXX项目推广方案，包含目标、策略、执行步骤、预算」','对结果不满意可以说「语气更正式」「字数控制在300字内」「加上数据支撑」'],
+    tips:'豆包完全免费，国内直接用；可以建立「角色」让豆包记住你的工作背景；支持语音输入，手机端体验很好'
+  },
+  {
+    id:15, cat:'efficiency', icon:'🔍', tool:'Perplexity', level:'beginner',
+    title:'Perplexity：带引用来源的 AI 搜索', time:'5 分钟',
+    desc:'替代 Google 的 AI 搜索工具，每条回答都附原始链接。Focus 模式、上传文件提问、保存搜索记录。',
+    intro:'Perplexity 是最好的 AI 搜索工具，回答实时联网且每条都有来源链接，解决了 ChatGPT 知识过时的问题。',
+    steps:['打开 perplexity.ai，可直接使用无需注册（注册后功能更多）','在搜索框输入问题，支持中文，点击搜索或按回车','回答会附带来源链接，点击可查看原始文章验证信息','点击「Focus」可以限定搜索范围：学术论文 / Reddit / YouTube / 新闻','注册后可以上传文件提问，如上传 PDF 问「这份报告的结论是什么」','点击「Collections」可以保存搜索记录，建立个人知识库'],
+    tips:'适合需要最新信息的问题（ChatGPT 知识有截止日期）；学术模式可以找到有引用的论文；免费版每天有 Pro 搜索次数限制'
+  }
+];
+
+let currentCat = 'all';
+const levelMap = { beginner:{label:'入门',cls:'tag-beginner'}, intermediate:{label:'进阶',cls:'tag-intermediate'}, advanced:{label:'高级',cls:'tag-advanced'} };
+
+function toggle(id) {
+  const item = document.getElementById('tut-' + id);
+  item.classList.toggle('open');
+}
+
+function renderCard(t) {
+  const lv = levelMap[t.level];
+  const stepsHtml = t.steps.map((s,i) =>
+    `<li><span class="step-num">${i+1}</span><span>${s}</span></li>`
+  ).join('');
+  return `<div class="tut-item" id="tut-${t.id}" data-cat="${t.cat}" data-search="${t.tool} ${t.title} ${t.desc}">
+    <div class="tut-card" onclick="toggle(${t.id})">
+      <div class="tut-icon">${t.icon}</div>
+      <div class="tut-body">
+        <div class="tut-title">${t.title}</div>
+        <div class="tut-desc">${t.desc}</div>
+        <div class="tut-meta">
+          <span class="tut-tag ${lv.cls}">${lv.label}</span>
+          <span class="tut-time">⏱ ${t.time}</span>
+          <span class="tut-tool">${t.tool}</span>
+        </div>
+      </div>
+      <div class="tut-arrow">▼</div>
+    </div>
+    <div class="tut-content">
+      <p class="intro">${t.intro}</p>
+      <ul class="tut-steps">${stepsHtml}</ul>
+      <div class="tut-tips"><strong>💡 小贴士：</strong>${t.tips}</div>
+    </div>
+  </div>`;
+}
+
+function render(list) {
+  const el = document.getElementById('tutorialList');
+  el.innerHTML = list.length ? list.map(renderCard).join('') : '<div class="empty">没有找到相关教程</div>';
+  document.getElementById('sectionCount').textContent = '共 ' + list.length + ' 篇教程';
+}
+
+function filterTutorials() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  let list = currentCat === 'all' ? tutorials : tutorials.filter(t => t.cat === currentCat);
+  if (q) list = list.filter(t => (t.tool + t.title + t.desc).toLowerCase().includes(q));
+  render(list);
+}
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sectionTitle').textContent = btn.textContent.trim();
+  document.getElementById('searchInput').value = '';
+  filterTutorials();
+}
+
+// 补充教程
+tutorials.push(
+  // 聊天AI
+  {id:16,cat:'chat',icon:'🌐',tool:'Gemini',level:'beginner',title:'Gemini 使用教程：Google 出品的多模态 AI',time:'5 分钟',
+   desc:'Google 推出的 AI 助手，支持文字、图片、代码多种输入，免费版功能强大。',
+   intro:'Gemini 是 Google 最新的 AI 模型，免费版可用 Gemini 1.5 Flash，支持上传图片直接提问。',
+   steps:['打开 gemini.google.com，用 Google 账号登录（国内需科学上网）','直接在输入框输入问题，支持中文对话','点击输入框左侧图标可上传图片，问「这张图里有什么？」','点击麦克风图标可以语音输入','在 Google Workspace 中可以直接调用 Gemini 处理 Gmail、Docs','点击左上角可以切换 Gemini Advanced（付费）获得更强能力'],
+   tips:'Gemini 和 Google 搜索、Gmail、Docs 深度集成；处理图片和多模态任务是强项；免费版已经够用'},
+  {id:17,cat:'chat',icon:'💬',tool:'通义千问',level:'beginner',title:'通义千问使用教程：阿里出品免费国产大模型',time:'4 分钟',
+   desc:'阿里云推出的大语言模型，国内免费使用，支持长文档处理和多模态输入。',
+   intro:'通义千问是阿里云推出的大模型，完全免费，无需翻墙，支持文字、图片、文档多种输入。',
+   steps:['打开 tongyi.aliyun.com，用手机号或淘宝账号登录','直接输入问题开始对话，支持中英文','点击「+」图标可上传图片、PDF、Word 文件','切换到「通义万相」可以进行 AI 绘图','点击「长文档解析」可以上传大文件进行分析','在阿里云控制台可以通过 API 调用，适合开发者'],
+   tips:'完全免费无限制；和阿里系产品（钉钉、淘宝）深度集成；长文档处理能力强'},
+  // 绘画AI
+  {id:18,cat:'image',icon:'🔥',tool:'Adobe Firefly',level:'beginner',title:'Adobe Firefly 使用教程：Adobe 官方 AI 绘图',time:'6 分钟',
+   desc:'Adobe 推出的 AI 生成工具，可直接在 Photoshop 中使用，生成内容可商用。',
+   intro:'Adobe Firefly 是专为创意工作者设计的 AI 工具，生成的图片可以商用，和 PS、AI 无缝集成。',
+   steps:['打开 firefly.adobe.com，用 Adobe 账号登录（免费账号即可）','在「文字生成图像」输入框输入描述，支持中文','选择图片比例（方形/横向/纵向）和内容类型（照片/图形/艺术）','点击「生成」等待约 10 秒，生成 4 张图','点击喜欢的图片，可以继续调整风格、颜色、光线','在 Photoshop 中选中区域，点击「生成式填充」直接调用 Firefly'],
+   tips:'生成内容经过版权训练，可安全商用；免费版每月有生成积分；在 PS 中的生成式填充功能非常实用'},
+  {id:19,cat:'image',icon:'🎭',tool:'Canva AI',level:'beginner',title:'Canva AI 使用教程：设计+AI 一站搞定',time:'7 分钟',
+   desc:'Canva 内置 AI 功能，可以文字生成图片、AI 背景替换、魔法消除，适合非设计师。',
+   intro:'Canva 是最易上手的设计工具，内置多种 AI 功能，不需要设计基础就能做出专业作品。',
+   steps:['打开 canva.com，用谷歌账号或邮箱注册登录','新建设计，选择模板类型（海报/PPT/社交媒体图）','点击左侧「AI 工具」→「文字生图」，输入描述生成图片','选中图片，点击「编辑图片」→「背景移除」一键抠图','点击「魔法消除」可以涂抹删除图片中不想要的元素','完成后点击「分享」→「下载」选择 PNG/PDF/MP4 格式'],
+   tips:'免费版功能已经很强大；AI 背景移除和魔法消除是最实用的功能；模板库非常丰富'},
+  // 写作AI
+  {id:20,cat:'write',icon:'✍️',tool:'Jasper',level:'intermediate',title:'Jasper AI 写作教程：营销文案专业工具',time:'8 分钟',
+   desc:'专为营销人员设计的 AI 写作工具，支持博客、广告文案、邮件营销等多种场景。',
+   intro:'Jasper 是专业的 AI 营销写作工具，内置 50+ 写作模板，适合需要批量生产内容的营销团队。',
+   steps:['访问 jasper.ai 注册账号（有7天免费试用）','选择「Templates」浏览 50+ 写作模板','选择「Blog Post」模板，输入标题和关键词','填写目标受众、语气风格（专业/轻松/幽默）','点击「Generate」生成内容，可以多次生成选择最佳版本','在「Documents」模式下可以长文写作，AI 实时辅助'],
+   tips:'适合英文营销内容；中文效果相对一般；有 Chrome 插件可以在任何网页调用'},
+  {id:21,cat:'write',icon:'📄',tool:'Copy.ai',level:'beginner',title:'Copy.ai 使用教程：快速生成营销文案',time:'5 分钟',
+   desc:'专注营销文案的 AI 工具，支持广告语、产品描述、社交媒体文案，免费版够用。',
+   intro:'Copy.ai 操作简单，免费版每月 2000 字，适合个人和小团队快速生成营销内容。',
+   steps:['打开 copy.ai，用谷歌账号登录（免费版每月 2000 字）','点击「New Project」创建项目','选择内容类型，如「Product Description」产品描述','填写产品名称、特点、目标受众','点击「Create Copy」生成多个版本','选择最好的版本，点击复制或继续编辑'],
+   tips:'免费版够个人使用；生成英文内容质量更高；适合电商产品描述和广告语'},
+  // 音频AI
+  {id:22,cat:'audio',icon:'🎵',tool:'Suno',level:'beginner',title:'Suno AI 音乐生成教程：输入歌词秒出完整歌曲',time:'6 分钟',
+   desc:'最强 AI 音乐生成工具，输入歌词和风格描述，几秒钟生成完整歌曲，含人声和伴奏。',
+   intro:'Suno 是目前最好的 AI 音乐生成工具，免费版每天可以生成 10 首歌，质量令人惊艳。',
+   steps:['打开 suno.com，用 Discord 或谷歌账号登录','点击「Create」进入创作页面','在「Song Description」输入风格描述，如「轻快的流行歌曲，关于夏天」','勾选「Custom Mode」可以自己写歌词','点击「Create」等待约 30 秒，生成 2 个版本','点击下载图标保存 MP3 文件'],
+   tips:'免费版每天 50 积分，约可生成 10 首；描述越具体风格越准确；可以指定「中文歌词」生成中文歌曲'},
+  {id:23,cat:'audio',icon:'🎙️',tool:'Krisp',level:'beginner',title:'Krisp 使用教程：AI 实时消除背景噪音',time:'5 分钟',
+   desc:'AI 降噪工具，开会时实时过滤背景噪音，支持所有视频会议软件，免费版够用。',
+   intro:'Krisp 是最好用的 AI 降噪工具，在嘈杂环境开会时让你的声音清晰干净，支持 Zoom、Teams、微信等。',
+   steps:['访问 krisp.ai 下载安装桌面客户端（Mac/Windows）','注册账号，免费版每天 60 分钟降噪时长','打开 Krisp，开启「Noise Cancellation」开关','打开 Zoom 或其他会议软件，在音频设置中选择「Krisp Microphone」','开始会议，Krisp 会自动过滤背景噪音','在 Krisp 界面可以看到实时降噪效果'],
+   tips:'免费版每天 60 分钟够大多数会议；付费版无限制；也支持消除对方的背景噪音'},
+  {id:24,cat:'audio',icon:'🎼',tool:'网易天音',level:'beginner',title:'网易天音使用教程：国产 AI 音乐创作平台',time:'6 分钟',
+   desc:'网易推出的 AI 音乐创作工具，支持哼唱生成旋律、AI 编曲、歌词创作，国内免费使用。',
+   intro:'网易天音是国内最好用的 AI 音乐工具，无需乐理知识，哼一段旋律就能生成完整编曲。',
+   steps:['打开 tianyin.music.163.com，用网易账号登录','点击「创作」→「AI 作曲」','选择音乐风格（流行/民谣/电子/古风等）','输入歌词或让 AI 自动生成歌词','点击「生成音乐」等待约 1 分钟','试听满意后可以下载或发布到网易云音乐'],
+   tips:'完全免费；支持哼唱输入旋律；生成的中文歌曲质量很高；可以直接发布到网易云'},
+  // 翻译AI
+  {id:25,cat:'translate',icon:'🌍',tool:'DeepL',level:'beginner',title:'DeepL 使用教程：最准确的 AI 翻译工具',time:'4 分钟',
+   desc:'公认翻译质量最好的 AI 工具，支持 31 种语言，翻译结果自然流畅，有免费版。',
+   intro:'DeepL 的翻译质量远超谷歌翻译，特别是在处理长句和专业术语时，结果更自然准确。',
+   steps:['打开 deepl.com，无需注册直接使用','在左侧输入框粘贴要翻译的文字，自动识别语言','右侧选择目标语言（中文选「Chinese (Simplified)」）','翻译结果实时显示，点击单词可以查看替换选项','点击「Document」标签可以上传 Word/PDF 文件翻译','安装 DeepL 桌面客户端，可以用快捷键在任何地方翻译'],
+   tips:'免费版每次最多 1500 字；文档翻译免费版每月 3 份；Chrome 插件可以划词翻译'},
+  {id:26,cat:'translate',icon:'📝',tool:'彩云小译',level:'beginner',title:'彩云小译使用教程：网页双语对照翻译',time:'4 分钟',
+   desc:'最好用的网页翻译工具，支持中英双语对照显示，阅读外文资料效率翻倍。',
+   intro:'彩云小译的双语对照功能是最大亮点，原文和译文同时显示，特别适合阅读英文技术文档。',
+   steps:['在 Chrome 应用商店搜索「彩云小译」安装插件','打开任意英文网页，点击浏览器右上角彩云图标','选择「翻译本页」，页面自动变成中英双语对照','也可以选中文字右键「彩云翻译」翻译选中内容','在插件设置中可以调整字体大小和显示样式','访问 fanyi.caiyunapp.com 可以翻译文档和长文本'],
+   tips:'双语对照是最大特色；适合阅读英文论文和技术文档；免费版功能已经够用'},
+  // 办公AI
+  {id:27,cat:'office',icon:'💼',tool:'Microsoft 365 Copilot',level:'intermediate',title:'Microsoft 365 Copilot 使用教程：Office 全家桶接入 AI',time:'10 分钟',
+   desc:'微软将 AI 集成到 Word、Excel、PPT、Outlook 中，一句话完成复杂办公任务。',
+   intro:'Microsoft 365 Copilot 把 AI 直接嵌入 Office 全家桶，在 Word 写报告、Excel 分析数据、PPT 生成演示文稿都可以用 AI 辅助。',
+   steps:['需要订阅 Microsoft 365 商业版并开通 Copilot（需企业账号）','在 Word 中点击「草稿」按钮，输入主题让 AI 生成文档框架','在 Excel 中点击「Copilot」，用自然语言分析数据，如「找出销售额最高的3个月」','在 PPT 中点击「Copilot」→「从文件创建演示文稿」，上传 Word 文档自动生成 PPT','在 Outlook 中点击「Copilot」可以总结长邮件、起草回复','在 Teams 会议中 Copilot 可以实时记录会议纪要'],
+   tips:'需要企业版订阅，个人版暂不支持；功能非常强大但价格较贵；国内访问需要科学上网'},
+  {id:28,cat:'office',icon:'📊',tool:'酷表ChatExcel',level:'beginner',title:'酷表 ChatExcel 教程：用对话操作 Excel',time:'6 分钟',
+   desc:'国产 AI Excel 工具，用中文对话完成数据分析、公式生成、图表制作，无需学函数。',
+   intro:'酷表 ChatExcel 让不懂 Excel 函数的人也能做数据分析，直接用中文说「帮我算每月销售额」就能得到结果。',
+   steps:['打开 chatexcel.com，用微信扫码登录','上传你的 Excel 文件（支持 .xlsx/.csv 格式）','在对话框输入需求，如「帮我统计每个销售员的总销售额」','AI 自动生成公式并应用到表格，结果实时显示','可以继续追问「按销售额从高到低排序」「生成柱状图」','满意后点击「下载」保存处理后的 Excel 文件'],
+   tips:'完全免费；支持复杂的数据分析需求；不会 Excel 函数的人最适合用；处理大文件可能较慢'},
+  {id:29,cat:'office',icon:'🎧',tool:'通义听悟',level:'beginner',title:'通义听悟使用教程：会议录音自动转文字',time:'5 分钟',
+   desc:'阿里推出的 AI 会议助手，上传录音自动转文字、生成摘要、识别发言人，免费使用。',
+   intro:'通义听悟可以把会议录音自动转成文字，还能识别不同发言人，生成会议摘要，省去手动整理的时间。',
+   steps:['打开 tingwu.aliyun.com，用阿里账号登录','点击「上传文件」，支持 MP3/MP4/WAV 等格式','也可以实时录音，点击「实时转写」开始录制','上传后等待处理（约为音频时长的 1/3 时间）','查看转写结果，支持识别多个发言人','点击「生成摘要」自动提取会议要点和待办事项'],
+   tips:'完全免费；中文识别准确率很高；支持方言识别；导出格式支持 Word 和 TXT'},
+  // 设计AI
+  {id:30,cat:'design',icon:'🎨',tool:'Canva AI',level:'beginner',title:'Canva AI 设计教程：零基础做出专业设计',time:'8 分钟',
+   desc:'Canva 内置 AI 设计功能，文字生成图片、智能调整布局、品牌套件一键应用。',
+   intro:'Canva 是最适合非设计师的工具，内置 AI 功能让设计变得极其简单，模板库超过 100 万个。',
+   steps:['打开 canva.com 注册免费账号','搜索模板类型，如「小红书封面」「公众号头图」','选择模板后点击文字直接修改内容','点击左侧「元素」→「AI 图像生成」，输入描述生成配图','点击「魔法调整」可以一键适配不同尺寸','完成后点击「分享」→「下载」选择格式'],
+   tips:'免费版模板和功能已经很丰富；Pro 版有更多模板和品牌套件功能；手机 App 也很好用'},
+  {id:31,cat:'design',icon:'🖌️',tool:'Looka',level:'beginner',title:'Looka 使用教程：AI 自动生成品牌 Logo',time:'6 分钟',
+   desc:'输入公司名称和偏好，AI 自动生成专业 Logo 和品牌视觉系统，适合创业者和小团队。',
+   intro:'Looka 用 AI 帮你设计 Logo，只需输入公司名称、行业和风格偏好，几秒钟生成数十个方案。',
+   steps:['打开 looka.com，点击「Make your logo」','输入公司名称和口号（可选）','选择行业类型','选择你喜欢的颜色风格（可多选）','选择你喜欢的 Logo 样式参考（从示例中选）','AI 生成数十个方案，点击喜欢的进行定制调整'],
+   tips:'预览免费，下载需付费（约 $20 起）；生成的 Logo 包含 SVG 矢量格式；同时提供名片、信纸等品牌物料'},
+  // 阅读AI
+  {id:32,cat:'read',icon:'📚',tool:'Kimi',level:'beginner',title:'用 Kimi 读论文：10 分钟读懂一篇英文文献',time:'6 分钟',
+   desc:'上传英文论文 PDF，让 Kimi 帮你提炼核心观点、解释专业术语、生成中文摘要。',
+   intro:'Kimi 处理学术论文非常擅长，可以快速提炼核心内容，特别适合需要大量阅读文献的研究者和学生。',
+   steps:['打开 kimi.moonshot.cn 登录','点击「+」上传英文论文 PDF','先问「用中文总结这篇论文的核心观点和主要结论」','再问「这篇论文的研究方法是什么？有什么创新点？」','遇到不懂的术语，直接问「XXX 是什么意思？」','最后问「这篇论文有什么局限性？」获得批判性视角'],
+   tips:'一次可以上传多篇论文进行对比；处理中文文献同样有效；可以让 Kimi 帮你写文献综述'},
+  {id:33,cat:'read',icon:'📖',tool:'ChatPDF',level:'beginner',title:'ChatPDF 使用教程：和 PDF 文件对话',time:'5 分钟',
+   desc:'专门处理 PDF 的 AI 工具，上传文件后可以直接提问，快速定位关键信息。',
+   intro:'ChatPDF 专注于 PDF 阅读，上传后可以像聊天一样提问，AI 会引用原文位置回答。',
+   steps:['打开 chatpdf.com，无需注册直接使用','点击「Drop PDF here」上传 PDF 文件（免费版最大 10MB）','上传后 AI 自动生成 3 个推荐问题','在输入框输入你的问题，如「这份合同的主要条款是什么？」','AI 回答时会标注原文页码，点击可以跳转查看','可以继续追问，深入了解文件内容'],
+   tips:'免费版每天 3 个 PDF，每个最多 50 页；适合快速浏览合同、报告；回答会标注原文位置'},
+  {id:34,cat:'read',icon:'📦',tool:'Cubox',level:'beginner',title:'Cubox 使用教程：AI 驱动的内容收藏和阅读',time:'6 分钟',
+   desc:'智能内容收藏工具，保存网页、文章、PDF，AI 自动生成摘要，支持全文搜索。',
+   intro:'Cubox 是最好用的内容收藏工具，保存的内容 AI 自动生成摘要，再也不怕收藏了不看。',
+   steps:['访问 cubox.pro 注册账号，安装 Chrome 插件','浏览网页时点击插件图标一键保存文章','在 Cubox 中查看收藏，AI 自动显示文章摘要','点击文章进入阅读模式，界面干净无广告','在搜索框输入关键词，全文搜索所有收藏内容','可以给文章打标签、加高亮、写笔记'],
+   tips:'免费版收藏数量有限制；AI 摘要功能非常实用；支持微信小程序，手机端体验好'},
+  // 电商AI
+  {id:35,cat:'ecom',icon:'🛒',tool:'ChatGPT',level:'intermediate',title:'用 ChatGPT 写电商产品描述：转化率提升技巧',time:'8 分钟',
+   desc:'用 ChatGPT 批量生成高转化率的产品标题、详情页文案、买家秀回复，提升店铺运营效率。',
+   intro:'电商卖家用 ChatGPT 可以大幅提升文案效率，从产品标题到详情页，全程 AI 辅助。',
+   steps:['打开 ChatGPT，先设定角色：「你是一位资深电商运营，擅长写高转化率的产品文案」','写产品标题：「帮我写10个XXX产品的淘宝标题，包含关键词XXX，突出卖点XXX」','写产品描述：「帮我写XXX产品的详情页文案，目标客户是XXX，核心卖点是XXX」','写买家秀回复：「帮我写5条回复买家好评的话术，语气真诚感谢」','批量生成：把产品信息整理成表格，让 ChatGPT 批量处理','优化迭代：对生成的文案说「更口语化」「加入紧迫感」「突出性价比」'],
+   tips:'提供越多产品信息，生成质量越高；可以让 AI 模仿竞品文案风格；批量处理时用表格格式效率更高'},
+  // 3D AI
+  {id:36,cat:'3d',icon:'🎮',tool:'Luma Labs',level:'beginner',title:'Luma Labs 使用教程：手机拍照生成 3D 模型',time:'8 分钟',
+   desc:'用手机绕物体拍一圈视频，AI 自动生成高质量 3D 模型，支持导出到 Blender 等软件。',
+   intro:'Luma Labs 让 3D 建模变得极其简单，只需用手机绕着物体拍一段视频，AI 自动重建 3D 模型。',
+   steps:['在手机上下载 Luma AI App（iOS/Android）','选择要扫描的物体，放在光线均匀的环境中','点击「Capture」，缓慢绕物体走一圈拍摄（约 1-2 分钟）','上传到云端处理，等待约 5-10 分钟','在 App 中查看生成的 3D 模型，可以旋转缩放','点击「Export」导出 GLB/OBJ 格式，导入 Blender 或 Unity'],
+   tips:'光线均匀是关键，避免强烈阴影；物体表面不能太光滑或透明；免费版有导出次数限制'},
+  // 搜索AI
+  {id:37,cat:'efficiency',icon:'🔎',tool:'秘塔AI搜索',level:'beginner',title:'秘塔 AI 搜索使用教程：国内最好用的 AI 搜索',time:'4 分钟',
+   desc:'国内免费的 AI 搜索工具，无广告，回答附来源链接，支持学术搜索模式。',
+   intro:'秘塔 AI 搜索是国内版的 Perplexity，完全免费无广告，搜索结果附带来源，非常适合日常使用。',
+   steps:['打开 metaso.cn，无需注册直接使用','在搜索框输入问题，支持中文自然语言提问','回答会附带来源链接，点击可查看原文','点击「学术」模式可以搜索论文和学术资料','点击「简洁」/「深入」切换回答详细程度','注册账号后可以保存搜索历史'],
+   tips:'完全免费无广告；中文搜索效果很好；学术模式适合找论文；比百度搜索结果质量高很多'},
+  // 提示词
+  {id:38,cat:'efficiency',icon:'💡',tool:'PromptHero',level:'beginner',title:'PromptHero 使用教程：找到最好的 AI 绘图提示词',time:'5 分钟',
+   desc:'最大的 AI 绘图提示词社区，可以搜索和复制高质量提示词，支持 Midjourney、SD 等工具。',
+   intro:'PromptHero 收录了数百万条经过验证的 AI 绘图提示词，找到喜欢的图片直接复制提示词使用。',
+   steps:['打开 prompthero.com，无需注册可以浏览','在搜索框输入风格关键词，如「portrait」「landscape」「anime」','浏览图片，找到喜欢的风格点击查看详情','详情页显示完整提示词，点击复制','把提示词粘贴到 Midjourney 或 Stable Diffusion 中使用','注册账号后可以收藏和分享自己的提示词'],
+   tips:'搜索时加上工具名称，如「midjourney portrait」效果更精准；可以学习高赞提示词的写法规律'}
+);
+
+render(tutorials);
+</script>
+</body>
+</html>

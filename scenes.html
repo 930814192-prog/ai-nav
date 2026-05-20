@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>场景推荐 — 喵办 AI 导航</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; background: #f5f6f7; color: #333; font-size: 14px; }
+    a { text-decoration: none; color: inherit; }
+
+    .topbar { background: #fff; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 200; }
+    .topbar-inner { max-width: 1300px; margin: 0 auto; padding: 0 24px; height: 52px; display: flex; align-items: center; }
+    .logo-area { display: flex; flex-direction: column; justify-content: center; margin-right: 32px; line-height: 1.2; }
+    .logo-name { font-size: 18px; font-weight: 800; color: #e53935; }
+    .logo-sub { font-size: 11px; color: #999; }
+    .topnav-links { display: flex; align-items: center; gap: 2px; flex: 1; }
+    .topnav-links a { padding: 6px 12px; border-radius: 4px; font-size: 13px; color: #555; white-space: nowrap; transition: all .15s; }
+    .topnav-links a:hover { background: #f5f5f5; color: #333; }
+    .topnav-links a.active { color: #e53935; font-weight: 600; }
+    .topnav-right { display: flex; align-items: center; gap: 10px; }
+    .btn-login { background: #333; color: #fff; border: none; border-radius: 4px; padding: 6px 16px; font-size: 13px; cursor: pointer; }
+    .btn-login:hover { background: #111; }
+
+    .hero { background: linear-gradient(135deg, #fff3e0 0%, #fce4ec 50%, #f3e5f5 100%); border-bottom: 1px solid #ffe0b2; padding: 36px 24px; text-align: center; }
+    .hero-title { font-size: 26px; font-weight: 800; color: #222; margin-bottom: 8px; }
+    .hero-sub { font-size: 14px; color: #777; }
+
+    .body-wrap { max-width: 1100px; margin: 28px auto; padding: 0 24px; }
+
+    .tab-bar { display: flex; gap: 8px; margin-bottom: 24px; }
+    .tab-btn { padding: 8px 20px; border-radius: 999px; border: 1px solid #eee; background: #fff; font-size: 13px; color: #555; cursor: pointer; transition: all .15s; }
+    .tab-btn:hover { border-color: #e53935; color: #e53935; }
+    .tab-btn.active { background: #e53935; color: #fff; border-color: #e53935; font-weight: 600; }
+
+    .scene-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+    .scene-item { background: #fff; border: 1px solid #eee; border-radius: 10px; overflow: hidden; transition: border-color .15s; }
+    .scene-item.open { border-color: #e53935; }
+
+    .scene-card { display: flex; align-items: center; gap: 14px; padding: 18px 20px; cursor: pointer; }
+    .scene-card:hover { background: #fafafa; }
+    .scene-emoji { font-size: 32px; flex-shrink: 0; }
+    .scene-info { flex: 1; min-width: 0; }
+    .scene-name { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 3px; }
+    .scene-desc { font-size: 12px; color: #999; }
+    .scene-count { font-size: 11px; color: #bbb; margin-top: 4px; }
+    .scene-arrow { font-size: 13px; color: #ccc; flex-shrink: 0; transition: transform .2s; }
+    .scene-item.open .scene-arrow { transform: rotate(180deg); color: #e53935; }
+
+    .scene-detail { display: none; border-top: 2px solid #e53935; background: #fafafa; padding: 18px 20px; }
+    .scene-item.open .scene-detail { display: block; }
+
+    .detail-tools { margin-bottom: 16px; }
+    .detail-tools-title { font-size: 12px; font-weight: 600; color: #999; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .5px; }
+    .tool-rec { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+    .tool-rank { width: 20px; height: 20px; border-radius: 50%; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .rank-1 { background: #ffd700; color: #7a5800; }
+    .rank-2 { background: #c0c0c0; color: #555; }
+    .rank-3 { background: #cd7f32; color: #fff; }
+    .rank-4 { background: #f0f0f0; color: #888; }
+    .tool-rec-body { flex: 1; }
+    .tool-rec-name { font-size: 13px; font-weight: 600; color: #222; }
+    .tool-rec-reason { font-size: 12px; color: #888; margin-top: 1px; }
+
+    .prompt-box { background: #fff; border: 1px solid #e0e0e0; border-radius: 6px; padding: 12px 14px; }
+    .prompt-label { font-size: 11px; font-weight: 600; color: #999; margin-bottom: 6px; }
+    .prompt-text { font-size: 12px; color: #444; line-height: 1.7; }
+    .copy-btn { margin-top: 10px; padding: 5px 14px; background: #e53935; color: #fff; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; transition: background .15s; }
+    .copy-btn:hover { background: #c62828; }
+    .copy-btn.copied { background: #43a047; }
+
+    .empty { text-align: center; padding: 60px; color: #bbb; grid-column: 1/-1; }
+
+    footer { text-align: center; padding: 24px; color: #bbb; font-size: 12px; border-top: 1px solid #eee; background: #fff; margin-top: 32px; }
+
+    @media (max-width: 900px) { .scene-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .scene-grid { grid-template-columns: 1fr; } .tab-bar { flex-wrap: wrap; } }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo-area">
+      <div class="logo-name">喵办</div>
+      <div class="logo-sub">AI 工具导航</div>
+    </a>
+    <div class="topnav-links">
+      <a href="index.html">首页</a>
+      <a href="tutorials.html">使用教程</a>
+      <a href="scenes.html" class="active">场景推荐</a>
+      <a href="news.html">AI 资讯</a>
+      <a href="#">关于我们</a>
+    </div>
+    <div class="topnav-right">
+      <button class="btn-login">登录</button>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-title">按场景找 AI 工具</div>
+  <div class="hero-sub">不知道用哪个？告诉我你要做什么，直接给你推荐最合适的工具和提示词</div>
+</div>
+
+<div class="body-wrap">
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="filterTab('all',this)">全部场景</button>
+    <button class="tab-btn" onclick="filterTab('work',this)">📋 日常办公</button>
+    <button class="tab-btn" onclick="filterTab('content',this)">✨ 内容创作</button>
+    <button class="tab-btn" onclick="filterTab('learn',this)">📚 学习提升</button>
+  </div>
+  <div class="scene-grid" id="sceneGrid"></div>
+</div>
+
+<footer>© 2025 喵办 AI 导航 &nbsp;·&nbsp; 帮打工人用好 AI &nbsp;·&nbsp; 持续更新中</footer>
+
+<script>
+const scenes = [
+  // 日常办公
+  {
+    id:1, tab:'work', emoji:'📝', name:'写工作周报',
+    desc:'快速生成结构清晰的周报，5分钟搞定',
+    tools:[
+      {name:'豆包', reason:'国内免费，直接说完成了什么就能生成，最简单', rank:1},
+      {name:'DeepSeek', reason:'逻辑清晰，生成的周报结构更专业', rank:2},
+      {name:'通义千问', reason:'阿里出品，免费无限制，速度快', rank:3},
+    ],
+    prompt:'帮我写本周工作周报。本周完成：[填写你完成的事项]。遇到问题：[填写遇到的困难]。下周计划：[填写下周安排]。要求：分点列出，语言简洁专业，控制在300字以内。'
+  },
+  {
+    id:2, tab:'work', emoji:'📊', name:'做汇报 PPT',
+    desc:'输入主题，AI 自动生成完整演示文稿',
+    tools:[
+      {name:'Gamma', reason:'一句话生成完整PPT，30秒出结果，支持中文', rank:1},
+      {name:'Beautiful.ai', reason:'模板更精美，适合对外汇报', rank:2},
+      {name:'ChatGPT', reason:'先生成大纲，再配合Canva手动制作', rank:3},
+    ],
+    prompt:'帮我生成一份PPT大纲，主题是：[填写主题]，受众是：[填写受众]，时长约[X]分钟。要求：包含封面、目录、正文（5-8页）、总结页，每页给出标题和3个要点。'
+  },
+  {
+    id:3, tab:'work', emoji:'📧', name:'写商务邮件',
+    desc:'催款、跟进、拒绝……各种邮件一键生成',
+    tools:[
+      {name:'ChatGPT', reason:'语气把控最好，专业又不失礼貌', rank:1},
+      {name:'豆包', reason:'国内免费，中文邮件效果很好', rank:2},
+      {name:'Claude', reason:'长邮件写作质量最高', rank:3},
+    ],
+    prompt:'帮我写一封商务邮件。收件人：[对方身份]。邮件目的：[填写目的，如催款/跟进项目/婉拒合作]。背景：[简单说明情况]。语气要求：[专业/友好/正式]。控制在200字以内。'
+  },
+  {
+    id:4, tab:'work', emoji:'📋', name:'整理会议记录',
+    desc:'录音或文字转成结构化会议纪要',
+    tools:[
+      {name:'通义听悟', reason:'上传录音自动转文字+生成摘要，最省事', rank:1},
+      {name:'Kimi', reason:'粘贴会议文字记录，自动提炼要点和待办', rank:2},
+      {name:'ChatGPT', reason:'格式最灵活，可以自定义纪要模板', rank:3},
+    ],
+    prompt:'以下是会议记录，请帮我整理成规范的会议纪要：\n[粘贴会议记录]\n\n要求：包含会议时间、参会人员、讨论要点、决议事项、待办任务（负责人+截止日期）。'
+  },
+  {
+    id:5, tab:'work', emoji:'📈', name:'分析 Excel 数据',
+    desc:'不会函数也能做数据分析和图表',
+    tools:[
+      {name:'酷表ChatExcel', reason:'上传文件直接用中文对话操作，零门槛', rank:1},
+      {name:'ChatGPT', reason:'描述需求自动生成Excel公式和VBA代码', rank:2},
+      {name:'DeepSeek', reason:'免费，生成公式和数据分析思路很准', rank:3},
+    ],
+    prompt:'我有一份Excel数据，包含以下字段：[填写字段名]。我想要：[填写分析需求，如统计每月销售额/找出异常数据/生成透视表]。请给我具体的操作步骤或Excel公式。'
+  },
+  {
+    id:6, tab:'work', emoji:'📄', name:'翻译文件',
+    desc:'合同、报告、邮件，中英互译准确流畅',
+    tools:[
+      {name:'DeepL', reason:'翻译质量最好，长句处理最自然', rank:1},
+      {name:'彩云小译', reason:'网页双语对照，阅读英文资料最方便', rank:2},
+      {name:'ChatGPT', reason:'可以指定专业领域和语气风格', rank:3},
+    ],
+    prompt:'请将以下内容翻译成[目标语言]，要求：保持专业术语准确，语言流畅自然，符合[行业/场景]的表达习惯。\n\n[粘贴原文]'
+  },
+  // 内容创作
+  {
+    id:7, tab:'content', emoji:'📱', name:'写小红书文案',
+    desc:'爆款标题+正文+话题标签一键生成',
+    tools:[
+      {name:'豆包', reason:'最懂小红书风格，生成的文案接地气', rank:1},
+      {name:'Kimi', reason:'可以分析爆款笔记，模仿风格写作', rank:2},
+      {name:'ChatGPT', reason:'结构更清晰，适合干货类内容', rank:3},
+    ],
+    prompt:'帮我写一篇小红书笔记。主题：[填写主题]。目标读者：[填写人群]。内容要点：[填写要包含的信息]。要求：标题要有吸引力（带数字或emoji），正文分点，结尾加互动引导，附5个相关话题标签。'
+  },
+  {
+    id:8, tab:'content', emoji:'📰', name:'写公众号文章',
+    desc:'从选题到全文，AI 辅助完成长文写作',
+    tools:[
+      {name:'Claude', reason:'长文写作质量最高，逻辑连贯', rank:1},
+      {name:'ChatGPT', reason:'结构清晰，可以分段生成', rank:2},
+      {name:'Notion AI', reason:'边写边用AI辅助，修改润色方便', rank:3},
+    ],
+    prompt:'帮我写一篇公众号文章。标题：[填写标题]。核心观点：[填写主要论点]。目标读者：[填写人群]。字数：[X]字左右。风格：[严肃/轻松/干货/故事性]。要求：有吸引人的开头、清晰的结构、有价值的干货、有力的结尾。'
+  },
+  {
+    id:9, tab:'content', emoji:'🎬', name:'写短视频脚本',
+    desc:'抖音/视频号脚本，含开场钩子和结尾引导',
+    tools:[
+      {name:'ChatGPT', reason:'脚本结构最专业，钩子设计好', rank:1},
+      {name:'豆包', reason:'国内平台风格更懂，接地气', rank:2},
+      {name:'DeepSeek', reason:'免费，逻辑清晰，适合知识类视频', rank:3},
+    ],
+    prompt:'帮我写一个短视频脚本。平台：[抖音/视频号/B站]。主题：[填写主题]。时长：[X]秒/分钟。风格：[搞笑/干货/情感/测评]。要求：前3秒要有强钩子，中间有价值点，结尾有引导关注/点赞的话术。'
+  },
+  {
+    id:10, tab:'content', emoji:'🎨', name:'生成配图素材',
+    desc:'文章封面、海报、社交媒体配图',
+    tools:[
+      {name:'Midjourney', reason:'效果最好，风格最多样', rank:1},
+      {name:'Canva AI', reason:'直接在设计工具里生成，最方便', rank:2},
+      {name:'Adobe Firefly', reason:'可商用，和PS无缝集成', rank:3},
+    ],
+    prompt:'（Midjourney提示词）a clean and modern [类型，如banner/poster/illustration], [主题描述], [风格，如minimalist/flat design/photorealistic], soft colors, professional, high quality --ar 16:9'
+  },
+  {
+    id:11, tab:'content', emoji:'🛍️', name:'写产品文案',
+    desc:'电商详情页、广告语、产品描述批量生成',
+    tools:[
+      {name:'ChatGPT', reason:'文案结构最专业，卖点提炼准确', rank:1},
+      {name:'豆包', reason:'国内电商风格更懂，免费无限制', rank:2},
+      {name:'Copy.ai', reason:'专为营销文案设计，模板丰富', rank:3},
+    ],
+    prompt:'帮我写一段产品详情页文案。产品：[产品名称]。核心卖点：[填写1-3个卖点]。目标客户：[填写人群]。竞品对比优势：[填写差异化]。要求：突出痛点+解决方案，语言有感染力，包含一个行动号召。'
+  },
+  {
+    id:12, tab:'content', emoji:'🎵', name:'创作 AI 音乐',
+    desc:'输入风格和歌词，生成完整歌曲',
+    tools:[
+      {name:'Suno', reason:'效果最好，支持中文歌词，免费版够用', rank:1},
+      {name:'网易天音', reason:'国内免费，中文歌曲质量高', rank:2},
+      {name:'Udio', reason:'风格更多样，适合特定曲风', rank:3},
+    ],
+    prompt:'（Suno风格描述）[音乐风格，如流行/民谣/电子/古风], [情感基调，如欢快/忧郁/励志], [乐器特色，如钢琴/吉他/电子合成器], Chinese lyrics, high quality'
+  },
+  // 学习提升
+  {
+    id:13, tab:'learn', emoji:'💻', name:'学编程',
+    desc:'从零入门到解决具体问题，AI 全程陪跑',
+    tools:[
+      {name:'ChatGPT', reason:'解释概念最清晰，代码示例丰富', rank:1},
+      {name:'Cursor', reason:'边学边写，AI实时帮你改错', rank:2},
+      {name:'GitHub Copilot', reason:'写代码时自动补全，学习效率高', rank:3},
+    ],
+    prompt:'我是编程初学者，想学[编程语言/技术]。请给我一个学习路线，包含：1.需要掌握的核心概念列表 2.推荐的学习顺序 3.每个阶段的练手项目建议 4.常见坑和注意事项。'
+  },
+  {
+    id:14, tab:'learn', emoji:'📖', name:'读英文论文',
+    desc:'上传PDF，快速提炼核心观点和方法',
+    tools:[
+      {name:'Kimi', reason:'长文档处理最强，中文总结准确', rank:1},
+      {name:'ChatPDF', reason:'专门处理PDF，引用原文位置', rank:2},
+      {name:'Claude', reason:'学术理解能力强，分析更深入', rank:3},
+    ],
+    prompt:'请帮我分析这篇论文，用中文回答：1.研究问题是什么？2.采用了什么研究方法？3.主要发现和结论是什么？4.有什么创新点？5.局限性是什么？请尽量简洁，每点不超过3句话。'
+  },
+  {
+    id:15, tab:'learn', emoji:'🧠', name:'学习新知识',
+    desc:'把复杂概念讲清楚，生成学习笔记',
+    tools:[
+      {name:'ChatGPT', reason:'解释能力最强，可以调整难度', rank:1},
+      {name:'Perplexity', reason:'联网搜索，信息最新，附来源', rank:2},
+      {name:'DeepSeek', reason:'免费，推理能力强，适合理解难点', rank:3},
+    ],
+    prompt:'请用简单易懂的方式解释[概念/知识点]。要求：1.先用一句话给出核心定义 2.用生活中的例子类比说明 3.列出3个关键要点 4.说明常见误解 5.推荐进一步学习的方向。'
+  },
+  {
+    id:16, tab:'learn', emoji:'🌏', name:'语言学习',
+    desc:'口语练习、语法纠错、词汇积累',
+    tools:[
+      {name:'ChatGPT', reason:'可以模拟对话练口语，纠错详细', rank:1},
+      {name:'Claude', reason:'语言理解深，解释语法规则清晰', rank:2},
+      {name:'DeepL', reason:'翻译最准确，学习地道表达', rank:3},
+    ],
+    prompt:'请扮演我的[英语/日语/其他]口语练习伙伴。我们来聊[话题]。如果我有语法错误或不自然的表达，请在我说完后指出并给出更好的说法。用[目标语言]和我对话，难度控制在[初级/中级/高级]。'
+  },
+  {
+    id:17, tab:'learn', emoji:'📒', name:'整理学习笔记',
+    desc:'把零散内容整理成结构化笔记和思维导图',
+    tools:[
+      {name:'Notion AI', reason:'边整理边用AI辅助，笔记工具最佳', rank:1},
+      {name:'Kimi', reason:'上传资料自动提炼要点', rank:2},
+      {name:'ChatGPT', reason:'生成思维导图结构和知识框架', rank:3},
+    ],
+    prompt:'请帮我整理以下内容，生成结构化笔记：\n[粘贴原始内容]\n\n要求：1.提炼核心概念（不超过5个）2.每个概念下列出关键要点 3.找出概念之间的关联 4.生成一个Markdown格式的思维导图结构。'
+  },
+  {
+    id:18, tab:'learn', emoji:'✅', name:'备考刷题',
+    desc:'生成练习题、解析错题、制定备考计划',
+    tools:[
+      {name:'ChatGPT', reason:'出题和解析质量最高，可以针对性练习', rank:1},
+      {name:'DeepSeek', reason:'免费，逻辑推理题解析很详细', rank:2},
+      {name:'Kimi', reason:'上传真题PDF，AI帮你分析考点', rank:3},
+    ],
+    prompt:'我正在备考[考试名称]，科目是[科目]。请帮我出[X]道[题型，如选择题/简答题]，难度[简单/中等/困难]，考点集中在[知识点]。出完题后给出答案和详细解析。'
+  },
+];
+
+let currentTab = 'all';
+
+function toggle(id) {
+  const item = document.getElementById('scene-' + id);
+  item.classList.toggle('open');
+}
+
+function copyPrompt(id) {
+  const scene = scenes.find(s => s.id === id);
+  navigator.clipboard.writeText(scene.prompt).then(() => {
+    const btn = document.getElementById('copy-' + id);
+    btn.textContent = '已复制 ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '复制提示词'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function renderScene(s) {
+  const toolsHtml = s.tools.map((t, i) => `
+    <div class="tool-rec">
+      <div class="tool-rank rank-${i+1}">${i+1}</div>
+      <div class="tool-rec-body">
+        <div class="tool-rec-name">${t.name}</div>
+        <div class="tool-rec-reason">${t.reason}</div>
+      </div>
+    </div>`).join('');
+
+  return `<div class="scene-item" id="scene-${s.id}" data-tab="${s.tab}">
+    <div class="scene-card" onclick="toggle(${s.id})">
+      <div class="scene-emoji">${s.emoji}</div>
+      <div class="scene-info">
+        <div class="scene-name">${s.name}</div>
+        <div class="scene-desc">${s.desc}</div>
+        <div class="scene-count">推荐 ${s.tools.length} 个工具</div>
+      </div>
+      <div class="scene-arrow">▼</div>
+    </div>
+    <div class="scene-detail">
+      <div class="detail-tools">
+        <div class="detail-tools-title">推荐工具</div>
+        ${toolsHtml}
+      </div>
+      <div class="prompt-box">
+        <div class="prompt-label">💬 可直接使用的提示词模板</div>
+        <div class="prompt-text">${s.prompt.replace(/\n/g, '<br>')}</div>
+        <button class="copy-btn" id="copy-${s.id}" onclick="copyPrompt(${s.id})">复制提示词</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render(tab) {
+  const list = tab === 'all' ? scenes : scenes.filter(s => s.tab === tab);
+  const grid = document.getElementById('sceneGrid');
+  grid.innerHTML = list.length ? list.map(renderScene).join('') : '<div class="empty">暂无场景</div>';
+}
+
+function filterTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render(tab);
+}
+
+render('all');
+</script>
+</body>
+</html>

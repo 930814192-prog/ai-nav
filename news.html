@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 资讯 — 喵办 AI 导航</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif; background: #f5f6f7; color: #333; font-size: 14px; }
+    a { text-decoration: none; color: inherit; }
+
+    .topbar { background: #fff; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 200; }
+    .topbar-inner { max-width: 1300px; margin: 0 auto; padding: 0 24px; height: 52px; display: flex; align-items: center; }
+    .logo-area { display: flex; flex-direction: column; justify-content: center; margin-right: 32px; line-height: 1.2; }
+    .logo-name { font-size: 18px; font-weight: 800; color: #e53935; }
+    .logo-sub { font-size: 11px; color: #999; }
+    .topnav-links { display: flex; align-items: center; gap: 2px; flex: 1; }
+    .topnav-links a { padding: 6px 12px; border-radius: 4px; font-size: 13px; color: #555; white-space: nowrap; transition: all .15s; }
+    .topnav-links a:hover { background: #f5f5f5; color: #333; }
+    .topnav-links a.active { color: #e53935; font-weight: 600; }
+    .topnav-right { display: flex; align-items: center; gap: 10px; }
+    .btn-login { background: #333; color: #fff; border: none; border-radius: 4px; padding: 6px 16px; font-size: 13px; cursor: pointer; }
+    .btn-login:hover { background: #111; }
+
+    .hero { background: linear-gradient(135deg, #e8f5e9 0%, #e3f2fd 50%, #f3e5f5 100%); border-bottom: 1px solid #c8e6c9; padding: 32px 24px; text-align: center; }
+    .hero-title { font-size: 26px; font-weight: 800; color: #222; margin-bottom: 8px; }
+    .hero-sub { font-size: 14px; color: #777; margin-bottom: 20px; }
+    .tab-bar { display: flex; gap: 8px; justify-content: center; }
+    .tab-btn { padding: 7px 20px; border-radius: 999px; border: 1px solid #ddd; background: #fff; font-size: 13px; color: #555; cursor: pointer; transition: all .15s; }
+    .tab-btn:hover { border-color: #e53935; color: #e53935; }
+    .tab-btn.active { background: #e53935; color: #fff; border-color: #e53935; font-weight: 600; }
+
+    .body-wrap { max-width: 1100px; margin: 28px auto; padding: 0 24px; display: flex; gap: 24px; align-items: flex-start; }
+
+    /* 左侧资讯列表 */
+    .news-main { flex: 1; min-width: 0; }
+    .news-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .news-card { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 20px 22px; transition: all .15s; cursor: pointer; }
+    .news-card:hover { border-color: #e53935; box-shadow: 0 2px 12px rgba(229,57,53,.07); transform: translateY(-1px); }
+
+    .news-card-top { display: flex; align-items: flex-start; gap: 12px; }
+    .news-cat-tag { padding: 3px 10px; border-radius: 3px; font-size: 11px; font-weight: 600; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+    .cat-model { background: #e8f5e9; color: #2e7d32; }
+    .cat-product { background: #e3f2fd; color: #1565c0; }
+    .cat-industry { background: #fff3e0; color: #e65100; }
+
+    .news-card-body { flex: 1; min-width: 0; }
+    .news-title { font-size: 15px; font-weight: 700; color: #222; margin-bottom: 6px; line-height: 1.5; }
+    .news-summary { font-size: 13px; color: #777; line-height: 1.7; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .news-meta { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+    .news-source { font-size: 11px; color: #bbb; }
+    .news-date { font-size: 11px; color: #bbb; }
+    .news-hot { font-size: 11px; color: #e53935; background: #fff0f0; padding: 1px 7px; border-radius: 3px; }
+
+    /* 右侧边栏 */
+    .news-sidebar { width: 260px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; position: sticky; top: 68px; }
+
+    .sidebar-card { background: #fff; border: 1px solid #eee; border-radius: 10px; overflow: hidden; }
+    .sidebar-card-title { padding: 12px 16px; font-size: 13px; font-weight: 700; color: #222; border-bottom: 1px solid #f0f0f0; background: #fafafa; }
+
+    .hot-list { padding: 8px 0; }
+    .hot-item { display: flex; align-items: center; gap: 10px; padding: 8px 16px; cursor: pointer; transition: background .15s; }
+    .hot-item:hover { background: #fafafa; }
+    .hot-num { width: 18px; height: 18px; border-radius: 3px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .hot-num.top3 { background: #e53935; color: #fff; }
+    .hot-num.rest { background: #f0f0f0; color: #999; }
+    .hot-text { font-size: 12px; color: #555; flex: 1; line-height: 1.4; }
+
+    .quick-links { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .quick-link { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #555; padding: 6px 10px; border-radius: 6px; transition: background .15s; }
+    .quick-link:hover { background: #f5f5f5; color: #e53935; }
+    .quick-link-icon { font-size: 16px; }
+
+    .empty { text-align: center; padding: 60px; color: #bbb; }
+
+    footer { text-align: center; padding: 24px; color: #bbb; font-size: 12px; border-top: 1px solid #eee; background: #fff; margin-top: 32px; }
+
+    @media (max-width: 900px) { .news-sidebar { display: none; } }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="index.html" class="logo-area">
+      <div class="logo-name">喵办</div>
+      <div class="logo-sub">AI 工具导航</div>
+    </a>
+    <div class="topnav-links">
+      <a href="index.html">首页</a>
+      <a href="tutorials.html">使用教程</a>
+      <a href="scenes.html">场景推荐</a>
+      <a href="news.html" class="active">AI 资讯</a>
+      <a href="#">关于我们</a>
+    </div>
+    <div class="topnav-right">
+      <button class="btn-login">登录</button>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-title">AI 资讯</div>
+  <div class="hero-sub">追踪 AI 行业最新动态，模型发布、产品更新、行业趋势一网打尽</div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="filterCat('all',this)">全部</button>
+    <button class="tab-btn" onclick="filterCat('model',this)">🧠 模型动态</button>
+    <button class="tab-btn" onclick="filterCat('product',this)">🚀 产品更新</button>
+    <button class="tab-btn" onclick="filterCat('industry',this)">📊 行业资讯</button>
+  </div>
+</div>
+
+<div class="body-wrap">
+  <main class="news-main">
+    <div class="news-list" id="newsList"></div>
+  </main>
+
+  <aside class="news-sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">🔥 热门话题</div>
+      <div class="hot-list">
+        <div class="hot-item"><div class="hot-num top3">1</div><div class="hot-text">GPT-4o 实时语音功能体验</div></div>
+        <div class="hot-item"><div class="hot-num top3">2</div><div class="hot-text">DeepSeek-R1 开源引爆全球</div></div>
+        <div class="hot-item"><div class="hot-num top3">3</div><div class="hot-text">AI 编程工具哪个最好用</div></div>
+        <div class="hot-item"><div class="hot-num rest">4</div><div class="hot-text">Midjourney V7 新功能解析</div></div>
+        <div class="hot-item"><div class="hot-num rest">5</div><div class="hot-text">国内大模型备案超200个</div></div>
+        <div class="hot-item"><div class="hot-num rest">6</div><div class="hot-text">可灵 2.0 视频生成实测</div></div>
+        <div class="hot-item"><div class="hot-num rest">7</div><div class="hot-text">Claude 3.5 vs GPT-4o 对比</div></div>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">📡 资讯来源</div>
+      <div class="quick-links">
+        <a href="https://36kr.com/information/AI" target="_blank" class="quick-link"><span class="quick-link-icon">📰</span>36氪 AI 频道</a>
+        <a href="https://www.jiqizhixin.com" target="_blank" class="quick-link"><span class="quick-link-icon">🤖</span>机器之心</a>
+        <a href="https://www.leiphone.com/category/ai" target="_blank" class="quick-link"><span class="quick-link-icon">⚡</span>雷锋网 AI</a>
+        <a href="https://openai.com/blog" target="_blank" class="quick-link"><span class="quick-link-icon">🌐</span>OpenAI Blog</a>
+        <a href="https://www.anthropic.com/news" target="_blank" class="quick-link"><span class="quick-link-icon">🟣</span>Anthropic News</a>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer>© 2025 喵办 AI 导航 &nbsp;·&nbsp; 帮打工人用好 AI &nbsp;·&nbsp; 持续更新中</footer>
+
+<script>
+const news = [
+  {
+    id:1, cat:'model',
+    title:'GPT-4o 全面更新：实时语音对话上线，情感识别能力大幅提升',
+    summary:'OpenAI 发布 GPT-4o 重大更新，新增实时语音对话功能，可以识别用户情绪并调整回应语气。响应速度平均 320ms，接近真人对话体验。免费用户也可使用语音功能，但有每日限额。',
+    source:'OpenAI Blog', date:'2025-05-10', hot:true,
+    url:'https://openai.com/blog'
+  },
+  {
+    id:2, cat:'model',
+    title:'Claude 3.5 Sonnet 正式发布：代码和写作能力全面超越 GPT-4o',
+    summary:'Anthropic 发布 Claude 3.5 Sonnet，在编程、写作、推理三项基准测试中均超过 GPT-4o。新增「Computer Use」功能，可以直接操控电脑完成任务。免费版可使用，每日有消息限额。',
+    source:'Anthropic', date:'2025-05-06', hot:true,
+    url:'https://www.anthropic.com/news'
+  },
+  {
+    id:3, cat:'model',
+    title:'DeepSeek-R1 开源震撼全球：推理能力媲美 o1，完全免费',
+    summary:'深度求索发布 DeepSeek-R1 并完全开源，推理能力在多项测试中与 OpenAI o1 持平，训练成本仅为后者的 1/30。消息一出引发全球 AI 圈震动，美股科技股集体大跌。',
+    source:'DeepSeek', date:'2025-04-20', hot:true,
+    url:'https://chat.deepseek.com'
+  },
+  {
+    id:4, cat:'model',
+    title:'Gemini 1.5 Pro 正式上线：100 万 token 超长上下文创行业纪录',
+    summary:'Google 发布 Gemini 1.5 Pro，支持 100 万 token 上下文窗口，可以一次性处理约 700 本书的内容。多模态能力全面提升，支持视频、音频、图片、文字混合输入。',
+    source:'Google DeepMind', date:'2025-04-15',
+    url:'https://gemini.google.com'
+  },
+  {
+    id:5, cat:'model',
+    title:'Meta Llama 3 发布：开源最强模型，支持本地部署',
+    summary:'Meta 发布 Llama 3 系列，包含 8B 和 70B 两个版本，在多项基准测试中超越同量级闭源模型。支持本地部署，开发者可免费商用，推动 AI 民主化进程。',
+    source:'Meta AI', date:'2025-04-08',
+    url:'https://llama.meta.com'
+  },
+  {
+    id:6, cat:'model',
+    title:'Grok-2 正式上线：马斯克 xAI 新模型，X 平台免费使用',
+    summary:'xAI 发布 Grok-2，在数学和科学推理方面表现突出。X（原 Twitter）Premium 用户可免费使用，支持图片生成功能。Grok 以幽默风格和无审查特性著称。',
+    source:'xAI', date:'2025-03-28',
+    url:'https://grok.x.ai'
+  },
+  {
+    id:7, cat:'model',
+    title:'Mistral Large 2 发布：欧洲最强开源大模型，支持 80+ 语言',
+    summary:'法国 AI 公司 Mistral 发布 Large 2，参数量 123B，支持 80 多种语言，代码能力大幅提升。作为欧洲 AI 代表，Mistral 坚持开源路线，与美国大厂形成差异化竞争。',
+    source:'Mistral AI', date:'2025-03-20',
+    url:'https://mistral.ai'
+  },
+  {
+    id:8, cat:'product',
+    title:'Midjourney V7 发布：人物一致性大幅提升，支持角色参考图',
+    summary:'Midjourney 发布 V7 版本，最大改进是人物一致性，同一角色在不同场景中保持外貌统一。新增「Character Reference」功能，上传参考图即可生成同款人物。提示词理解能力也显著提升。',
+    source:'Midjourney', date:'2025-05-08', hot:true,
+    url:'https://www.midjourney.com'
+  },
+  {
+    id:9, cat:'product',
+    title:'Suno V4 上线：AI 音乐质量接近专业制作水准',
+    summary:'Suno 发布 V4 版本，生成音乐的音质和编曲复杂度大幅提升，人声更自然，乐器层次更丰富。支持更长时长（最长 4 分钟），新增「风格混合」功能。免费版每天 50 积分。',
+    source:'Suno', date:'2025-05-01',
+    url:'https://suno.com'
+  },
+  {
+    id:10, cat:'product',
+    title:'可灵 2.0 发布：视频生成时长延长至 3 分钟，运动流畅度大升',
+    summary:'快手推出可灵 2.0，视频生成时长从 10 秒延长至最长 3 分钟，人物动作流畅度和物理真实感显著提升。新增「镜头控制」功能，可以指定推拉摇移等专业镜头语言。',
+    source:'快手', date:'2025-04-25', hot:true,
+    url:'https://klingai.kuaishou.com'
+  },
+  {
+    id:11, cat:'product',
+    title:'Cursor 1.0 正式版发布：AI 编程编辑器里程碑版本',
+    summary:'Cursor 发布 1.0 正式版，新增「Agent 模式」可以自主完成多步骤编程任务，支持自动运行代码、修复错误、提交代码。月活用户突破 100 万，成为最受开发者欢迎的 AI 编程工具。',
+    source:'Cursor', date:'2025-04-18',
+    url:'https://cursor.sh'
+  },
+  {
+    id:12, cat:'product',
+    title:'Notion AI 全面升级：支持跨页面知识库问答',
+    summary:'Notion AI 推出重大更新，新增「Q&A」功能，可以跨越整个工作区的所有页面回答问题。AI 会自动引用相关页面内容，适合团队知识管理。同时支持自动生成数据库视图和关系图。',
+    source:'Notion', date:'2025-04-10',
+    url:'https://www.notion.so'
+  },
+  {
+    id:13, cat:'product',
+    title:'豆包 App 月活破亿：国内 AI 助手用户规模第一',
+    summary:'字节跳动旗下豆包 App 月活跃用户突破 1 亿，成为国内用户规模最大的 AI 助手产品。豆包以完全免费、无使用限制的策略快速扩张，在职场写作和日常对话场景渗透率最高。',
+    source:'字节跳动', date:'2025-04-05',
+    url:'https://www.doubao.com'
+  },
+  {
+    id:14, cat:'product',
+    title:'Gamma 新增中文模板库：PPT 生成支持中文排版优化',
+    summary:'Gamma 上线中文专属模板库，针对中文排版习惯优化字体和间距，生成的 PPT 更符合国内审美。同时新增「从文档生成」功能，上传 Word 文件自动转换为演示文稿。',
+    source:'Gamma', date:'2025-03-30',
+    url:'https://gamma.app'
+  },
+  {
+    id:15, cat:'industry',
+    title:'OpenAI 完成新一轮融资，估值达 1570 亿美元创科技史纪录',
+    summary:'OpenAI 完成 66 亿美元融资，估值升至 1570 亿美元，成为史上估值最高的非上市科技公司。本轮融资由软银领投，微软、英伟达等跟投。OpenAI 计划用于扩大算力和加速 AGI 研究。',
+    source:'华尔街日报', date:'2025-05-05', hot:true,
+    url:'https://openai.com'
+  },
+  {
+    id:16, cat:'industry',
+    title:'谷歌宣布 AI Overview 全面铺开：AI 搜索正式替代传统结果页',
+    summary:'谷歌宣布 AI Overview（AI 概览）功能在美国全面上线，用户搜索时首先看到 AI 生成的综合回答，传统蓝链结果退居其次。此举引发 SEO 行业震动，内容创作者流量面临重大冲击。',
+    source:'Google', date:'2025-04-28',
+    url:'https://google.com'
+  },
+  {
+    id:17, cat:'industry',
+    title:'国内 AI 大模型备案数量突破 200 个，监管框架逐步完善',
+    summary:'国家互联网信息办公室数据显示，国内通过备案的 AI 大模型已超过 200 个，涵盖通用对话、代码生成、图像生成等多个类别。监管部门同步出台算法推荐、深度合成等配套法规。',
+    source:'网信办', date:'2025-04-20',
+    url:'#'
+  },
+  {
+    id:18, cat:'industry',
+    title:'Adobe 宣布全产品线接入 AI：Photoshop、Premiere 全面升级',
+    summary:'Adobe 在 MAX 大会宣布旗下所有创意软件全面接入 AI 功能，Photoshop 新增生成式扩展和对象移除，Premiere 新增 AI 自动剪辑和字幕生成。Adobe Firefly 生成内容可安全商用。',
+    source:'Adobe', date:'2025-04-12',
+    url:'https://adobe.com'
+  },
+  {
+    id:19, cat:'industry',
+    title:'AI 编程工具市场规模预计 2025 年突破 100 亿美元',
+    summary:'市场研究机构 Gartner 报告显示，全球 AI 编程辅助工具市场规模预计在 2025 年突破 100 亿美元，年增长率超过 40%。GitHub Copilot、Cursor、Codeium 是市场份额前三的产品。',
+    source:'Gartner', date:'2025-04-02',
+    url:'#'
+  },
+  {
+    id:20, cat:'industry',
+    title:'教育部发布 AI 进课堂指导意见，中小学开始普及 AI 素养教育',
+    summary:'教育部发布《中小学人工智能教育指导意见》，要求将 AI 素养纳入必修课程体系。小学阶段以体验为主，初中开始学习基础原理，高中引入编程和模型训练实践。',
+    source:'教育部', date:'2025-03-25',
+    url:'#'
+  },
+];
+
+const catMap = { model:'cat-model', product:'cat-product', industry:'cat-industry' };
+const catLabel = { model:'模型动态', product:'产品更新', industry:'行业资讯' };
+let currentCat = 'all';
+
+function renderCard(n) {
+  return `<div class="news-card" onclick="window.open('${n.url}','_blank')">
+    <div class="news-card-top">
+      <span class="news-cat-tag ${catMap[n.cat]}">${catLabel[n.cat]}</span>
+      <div class="news-card-body">
+        <div class="news-title">${n.title}</div>
+        <div class="news-summary">${n.summary}</div>
+        <div class="news-meta">
+          <span class="news-source">📰 ${n.source}</span>
+          <span class="news-date">🕐 ${n.date}</span>
+          ${n.hot ? '<span class="news-hot">🔥 热门</span>' : ''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render(cat) {
+  const list = cat === 'all' ? news : news.filter(n => n.cat === cat);
+  const el = document.getElementById('newsList');
+  el.innerHTML = list.length ? list.map(renderCard).join('') : '<div class="empty">暂无资讯</div>';
+}
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render(cat);
+}
+
+render('all');
+</script>
+</body>
+</html>
