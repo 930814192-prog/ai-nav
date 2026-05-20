@@ -477,6 +477,118 @@
       .tool-grid { grid-template-columns: repeat(3, 1fr); }
       .float-bar { display: none; }
     }
+
+    /* 登录弹窗 */
+    .modal-mask {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-mask.open { display: flex; }
+    .modal {
+      background: #fff;
+      border-radius: 12px;
+      padding: 32px 28px;
+      width: 360px;
+      position: relative;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 16px;
+      font-size: 20px;
+      color: #bbb;
+      cursor: pointer;
+      border: none;
+      background: none;
+      line-height: 1;
+    }
+    .modal-close:hover { color: #666; }
+    .modal-title { font-size: 18px; font-weight: 800; color: #222; margin-bottom: 6px; }
+    .modal-sub { font-size: 13px; color: #999; margin-bottom: 24px; }
+    .modal-label { font-size: 13px; color: #555; margin-bottom: 6px; font-weight: 500; }
+    .modal-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .15s;
+      margin-bottom: 14px;
+    }
+    .modal-input:focus { border-color: #e53935; }
+    .modal-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .modal-row .modal-input { margin-bottom: 0; flex: 1; }
+    .btn-send-code {
+      padding: 10px 14px;
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .15s;
+    }
+    .btn-send-code:hover:not(:disabled) { background: #e53935; color: #fff; border-color: #e53935; }
+    .btn-send-code:disabled { color: #bbb; cursor: not-allowed; }
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-submit:hover { background: #c62828; }
+    .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+    .modal-msg { font-size: 12px; margin-top: 10px; text-align: center; min-height: 18px; }
+    .modal-msg.error { color: #e53935; }
+    .modal-msg.success { color: #43a047; }
+
+    /* 登录后用户头像 */
+    .user-avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: #e53935;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+    }
+    .user-menu {
+      display: none;
+      position: absolute;
+      top: 38px; right: 0;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      min-width: 120px;
+      z-index: 300;
+    }
+    .user-avatar:hover .user-menu { display: block; }
+    .user-menu-item {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .user-menu-item:hover { background: #fafafa; color: #e53935; }
   </style>
 </head>
 <body>
@@ -497,7 +609,14 @@
     </div>
     <div class="topnav-right">
       <button class="btn-search">🔍</button>
-      <button class="btn-login">登录</button>
+      <button class="btn-login" onclick="openLogin()">登录</button>
+      <div class="user-avatar" id="userAvatar" style="display:none">
+        <span id="userInitial"></span>
+        <div class="user-menu">
+          <div class="user-menu-item" id="userEmail" style="color:#999;font-size:12px;cursor:default;"></div>
+          <div class="user-menu-item" onclick="logout()">退出登录</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -691,6 +810,126 @@
   document.querySelector('.float-bar').lastElementChild.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+</script>
+
+<!-- 登录弹窗 -->
+<div class="modal-mask" id="modalMask" onclick="handleMaskClick(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLogin()">×</button>
+    <div class="modal-title">登录喵办</div>
+    <div class="modal-sub">输入邮箱，我们发送验证码给你</div>
+
+    <div id="stepEmail">
+      <div class="modal-label">邮箱地址</div>
+      <input class="modal-input" type="email" id="emailInput" placeholder="your@email.com" />
+      <button class="btn-submit" onclick="sendCode()">发送验证码</button>
+      <div class="modal-msg" id="emailMsg"></div>
+    </div>
+
+    <div id="stepCode" style="display:none">
+      <div class="modal-label">验证码已发送至 <span id="emailDisplay" style="color:#e53935"></span></div>
+      <div class="modal-row">
+        <input class="modal-input" type="text" id="codeInput" placeholder="输入6位验证码" maxlength="6" />
+      </div>
+      <button class="btn-submit" onclick="verifyCode()">确认登录</button>
+      <div style="margin-top:10px;text-align:center">
+        <span style="font-size:12px;color:#999">没收到？</span>
+        <button class="btn-send-code" id="resendBtn" onclick="sendCode(true)" style="margin-left:6px;padding:4px 10px;font-size:12px">重新发送</button>
+      </div>
+      <div class="modal-msg" id="codeMsg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://xrjhloeblofbzgpiwvcp.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhyamhsb2VibG9mYnpncGl3dmNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkxMTIxNjIsImV4cCI6MjA5NDY4ODE2Mn0.qe3Q9F6bwswAe-hxNbCGHT5mkkZdBJqTKK6_Syj3-uQ';
+
+  function supaFetch(path, body) {
+    return fetch(SUPABASE_URL + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY },
+      body: JSON.stringify(body)
+    }).then(r => r.json());
+  }
+
+  function openLogin() { document.getElementById('modalMask').classList.add('open'); }
+  function closeLogin() {
+    document.getElementById('modalMask').classList.remove('open');
+    document.getElementById('stepEmail').style.display = '';
+    document.getElementById('stepCode').style.display = 'none';
+    document.getElementById('emailInput').value = '';
+    document.getElementById('codeInput').value = '';
+    document.getElementById('emailMsg').textContent = '';
+    document.getElementById('codeMsg').textContent = '';
+  }
+  function handleMaskClick(e) { if (e.target === document.getElementById('modalMask')) closeLogin(); }
+
+  function setMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.className = 'modal-msg ' + (type || '');
+  }
+
+  async function sendCode(isResend) {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setMsg('emailMsg', '请输入有效的邮箱地址', 'error'); return;
+    }
+    const btn = isResend ? document.getElementById('resendBtn') : document.querySelector('#stepEmail .btn-submit');
+    btn.disabled = true;
+    btn.textContent = '发送中…';
+    setMsg(isResend ? 'codeMsg' : 'emailMsg', '', '');
+
+    const res = await supaFetch('/auth/v1/otp', { email, create_user: true });
+    btn.disabled = false;
+    btn.textContent = isResend ? '重新发送' : '发送验证码';
+
+    if (res.error) {
+      setMsg(isResend ? 'codeMsg' : 'emailMsg', '发送失败：' + res.error.message, 'error'); return;
+    }
+    document.getElementById('emailDisplay').textContent = email;
+    document.getElementById('stepEmail').style.display = 'none';
+    document.getElementById('stepCode').style.display = '';
+    if (isResend) setMsg('codeMsg', '验证码已重新发送', 'success');
+  }
+
+  async function verifyCode() {
+    const email = document.getElementById('emailInput').value.trim();
+    const token = document.getElementById('codeInput').value.trim();
+    if (!token || token.length < 6) { setMsg('codeMsg', '请输入6位验证码', 'error'); return; }
+
+    const btn = document.querySelector('#stepCode .btn-submit');
+    btn.disabled = true; btn.textContent = '验证中…';
+
+    const res = await supaFetch('/auth/v1/verify', { email, token, type: 'email' });
+    btn.disabled = false; btn.textContent = '确认登录';
+
+    if (res.error) { setMsg('codeMsg', '验证码错误或已过期', 'error'); return; }
+
+    localStorage.setItem('sb_user_email', res.user?.email || email);
+    closeLogin();
+    updateLoginState(res.user?.email || email);
+  }
+
+  function updateLoginState(email) {
+    if (!email) return;
+    document.querySelector('.btn-login').style.display = 'none';
+    const avatar = document.getElementById('userAvatar');
+    avatar.style.display = 'flex';
+    document.getElementById('userInitial').textContent = email[0].toUpperCase();
+    document.getElementById('userEmail').textContent = email;
+  }
+
+  function logout() {
+    localStorage.removeItem('sb_user_email');
+    document.querySelector('.btn-login').style.display = '';
+    document.getElementById('userAvatar').style.display = 'none';
+  }
+
+  // 页面加载时恢复登录状态
+  const savedEmail = localStorage.getItem('sb_user_email');
+  if (savedEmail) updateLoginState(savedEmail);
 </script>
 
 </body>
